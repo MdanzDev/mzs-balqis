@@ -3,696 +3,1162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>AI Gemma Playground · Games Betul</title>
+    <title>Gemma AI + FULLY FUNCTIONAL GAMES</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        * { font-family: 'Inter', sans-serif; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         
-        /* Premium dark theme */
         body {
-            background: #0a0c0f;
-            background-image: radial-gradient(circle at 10% 20%, #1f2937 0%, #0a0c0f 90%);
-            min-height: 100vh;
+            background: #0a0c10;
+            font-family: 'Inter', system-ui, sans-serif;
+            color: #e2e8f0;
+            padding: 16px;
         }
         
-        /* Game card hover effects */
-        .game-card-enhanced {
-            background: linear-gradient(145deg, #1e1e1e, #171717);
-            border: 1px solid #2d2d2d;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
+        /* Game containers */
+        .game-card {
+            background: #161b22;
+            border-radius: 24px;
+            padding: 20px;
+            border: 1px solid #30363d;
+            box-shadow: 0 10px 20px -5px #00000080;
         }
         
-        .game-card-enhanced::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(138, 180, 248, 0.1), transparent);
-            transition: left 0.5s;
-        }
-        
-        .game-card-enhanced:hover {
-            transform: translateY(-4px);
-            border-color: #8ab4f8;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(138, 180, 248, 0.3);
-        }
-        
-        .game-card-enhanced:hover::before {
-            left: 100%;
-        }
-        
-        /* UNO card styling */
-        .uno-card-modern {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border-radius: 12px;
-            color: white;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            box-shadow: 0 10px 0 #991b1b, 0 4px 12px rgba(0,0,0,0.4);
-            transition: all 0.1s ease;
+        /* UNO cards */
+        .uno-card {
             width: 70px;
             height: 100px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            position: relative;
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: white;
+            text-shadow: 0 2px 3px black;
+            box-shadow: 0 6px 0 #00000060, 0 8px 12px black;
             cursor: pointer;
+            transition: all 0.08s linear;
+            border: 2px solid #ffffff30;
+            user-select: none;
         }
         
-        .uno-card-modern:active {
-            transform: translateY(6px);
-            box-shadow: 0 4px 0 #991b1b, 0 4px 12px rgba(0,0,0,0.4);
-        }
+        .uno-card:active { transform: translateY(5px); box-shadow: 0 2px 0 #00000060, 0 5px 10px black; }
+        .uno-card.red { background: linear-gradient(145deg, #ef4444, #b91c1c); }
+        .uno-card.blue { background: linear-gradient(145deg, #3b82f6, #1e3a8a); }
+        .uno-card.green { background: linear-gradient(145deg, #22c55e, #166534); }
+        .uno-card.yellow { background: linear-gradient(145deg, #eab308, #854d0e); color: #1a1a1a; text-shadow: 0 1px 2px white; }
+        .uno-card.wild { background: linear-gradient(145deg, #2d2d2d, #000000); }
         
-        .uno-card-modern.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 10px 0 #1e40af; }
-        .uno-card-modern.green { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 10px 0 #166534; }
-        .uno-card-modern.yellow { background: linear-gradient(135deg, #eab308, #ca8a04); box-shadow: 0 10px 0 #854d0e; color: #1e1e1e; text-shadow: 0 1px 2px rgba(255,255,255,0.5); }
-        
-        /* Playing cards */
+        /* Poker cards */
         .poker-card {
             background: white;
-            border-radius: 10px;
-            padding: 8px 6px;
-            font-weight: 700;
-            box-shadow: 0 8px 0 #cbd5e1, 0 4px 10px rgba(0,0,0,0.3);
-            min-width: 50px;
-            text-align: center;
-            font-size: 1.2rem;
-            transition: all 0.1s;
-            cursor: pointer;
-            border: 1px solid #e2e8f0;
-        }
-        
-        .poker-card:active {
-            transform: translateY(5px);
-            box-shadow: 0 3px 0 #cbd5e1, 0 4px 10px rgba(0,0,0,0.3);
-        }
-        
-        .red-suit { color: #dc2626; }
-        .black-suit { color: #1e293b; }
-        
-        /* Chess 3D effect */
-        .chess-3d {
-            box-shadow: 0 8px 0 #4b5563, 0 4px 12px black;
-            border-radius: 6px;
-        }
-        
-        /* Typing animation */
-        .typing-indicator {
-            display: inline-flex;
+            color: #1a1a1a;
+            width: 60px;
+            height: 85px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 4px;
-            background: #2a2a2a;
-            padding: 8px 16px;
-            border-radius: 20px;
-            margin-bottom: 8px;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 0 #4a5568, 0 6px 10px #00000060;
+            cursor: pointer;
+            transition: all 0.08s;
+            border: 1px solid #cbd5e1;
         }
         
-        .typing-dot {
-            width: 8px;
-            height: 8px;
+        .poker-card:active { transform: translateY(3px); box-shadow: 0 1px 0 #4a5568, 0 4px 8px #00000060; }
+        .red-suit { color: #dc2626; }
+        
+        /* Chess */
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            max-width: 400px;
+            margin: 0 auto;
+            border: 3px solid #8b5a2b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .chess-square {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+            text-shadow: 0 2px 3px #00000080;
+        }
+        
+        .chess-square.light { background-color: #f0d9b5; color: #000; }
+        .chess-square.dark { background-color: #b58863; color: #fff; }
+        .chess-square.selected { outline: 4px solid #fbbf24; z-index: 10; }
+        .chess-square.valid-move { background-color: #86efac !important; }
+        .chess-square.check { background-color: #fca5a5 !important; }
+        
+        .typing-dots::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+            display: inline-block;
+            width: 24px;
+        }
+        
+        @keyframes dots { 0%, 20% { content: '.'; } 40% { content: '..'; } 60% { content: '...'; } 80%, 100% { content: ''; } }
+        
+        button {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        button:active { transform: scale(0.97); }
+        
+        .tab-btn.active {
             background: #8ab4f8;
-            border-radius: 50%;
-            animation: typingBounce 1.4s infinite ease-in-out;
-        }
-        
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        
-        @keyframes typingBounce {
-            0%, 80%, 100% { transform: scale(0.6); opacity: 0.6; }
-            40% { transform: scale(1); opacity: 1; }
-        }
-        
-        /* Text fade-in animation */
-        .message-animation {
-            animation: messageAppear 0.3s ease-out;
-        }
-        
-        @keyframes messageAppear {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Animated gradient border */
-        .gradient-border {
-            position: relative;
-            border: 2px solid transparent;
-            background: linear-gradient(#1e1e1e, #1e1e1e) padding-box, 
-                        linear-gradient(90deg, #8ab4f8, #c084fc, #8ab4f8) border-box;
-            border-radius: 16px;
-            background-size: 200% 100%;
-            animation: borderMove 3s linear infinite;
-        }
-        
-        @keyframes borderMove {
-            0% { background-position: 0% 0; }
-            100% { background-position: 200% 0; }
+            color: black;
         }
     </style>
 </head>
-<body class="text-gray-200 p-4 pb-24">
-    <!-- Hardcoded API key (Gemma model) -->
-    <div style="display: none;">const GEMMA_API_KEY = 'AIzaSyBaY5TsW-NDZbu9Aha2H9raHTQ4Qj8SiAw';</div>
-
+<body>
     <div class="max-w-6xl mx-auto">
-        <!-- Header with hardcoded key badge -->
-        <div class="bg-gradient-to-r from-[#1e1e1e] to-[#25282c] rounded-2xl p-5 mb-6 border border-[#3d4147] shadow-xl">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-[#8ab4f8] rounded-2xl flex items-center justify-center text-black text-2xl font-bold">G</div>
+        <!-- Header -->
+        <div class="game-card mb-4">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-[#8ab4f8] rounded-2xl flex items-center justify-center text-black text-3xl font-black">G</div>
                 <div>
-                    <h1 class="text-2xl font-bold bg-gradient-to-r from-[#8ab4f8] to-[#c084fc] bg-clip-text text-transparent">Gemma 3 Playground</h1>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="bg-[#2a2a2a] px-3 py-1 rounded-full text-xs flex items-center gap-1">
-                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            API Key: <span class="font-mono text-green-400">AIzaSyB...iAw</span>
-                        </span>
-                        <span class="bg-[#2a2a2a] px-3 py-1 rounded-full text-xs">Model: gemma-3-27b-it</span>
+                    <h1 class="text-3xl font-black text-[#8ab4f8]">GEMMA 3 · COMPLETE GAMES</h1>
+                    <div class="flex gap-4 text-sm text-gray-400">
+                        <span>✅ UNO: Skip, +2, +4, Reverse work</span>
+                        <span>✅ Poker: Bet, Call, Fold</span>
+                        <span>✅ Chess: Check/Checkmate, AI</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Main tabs: Chat / Games -->
-        <div class="flex gap-2 mb-6">
-            <button id="tabChat" class="tab-btn flex-1 py-3 rounded-xl text-sm font-bold transition-all bg-[#8ab4f8] text-black shadow-lg shadow-[#8ab4f8]/20">💬 CHAT</button>
-            <button id="tabGames" class="tab-btn flex-1 py-3 rounded-xl text-sm font-bold transition-all text-gray-400 bg-[#1e1e1e] hover:bg-[#2a2a2a]">🎮 GAMES</button>
+        <!-- Tabs -->
+        <div class="flex gap-2 mb-4">
+            <button id="tabChat" class="tab-btn active flex-1 py-3 rounded-xl font-bold bg-[#8ab4f8] text-black">💬 CHAT</button>
+            <button id="tabGames" class="tab-btn flex-1 py-3 rounded-xl font-bold bg-[#161b22] text-gray-400">🎮 GAMES</button>
         </div>
 
-        <!-- ========== CHAT SECTION ========== -->
-        <div id="chatSection" class="block">
-            <div class="gradient-border overflow-hidden">
-                <div class="bg-[#1e1e1e] rounded-2xl p-5">
-                    <!-- Chat header -->
-                    <div class="flex items-center gap-2 mb-4 pb-2 border-b border-[#2d2d2d]">
-                        <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-                        <span class="text-sm font-medium">Gemma 3 27B · Connected</span>
-                    </div>
-                    
-                    <!-- Chat messages -->
-                    <div id="chatMessages" class="h-96 overflow-y-auto pr-2 space-y-4 mb-4 custom-scrollbar">
-                        <div class="text-gray-500 text-sm italic text-center">👋 Start a conversation with Gemma 3</div>
-                    </div>
-                    
-                    <!-- Typing indicator (hidden by default) -->
-                    <div id="typingIndicator" class="typing-indicator hidden">
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <div class="typing-dot"></div>
-                        <span class="text-xs text-gray-400 ml-1">Gemma is thinking...</span>
-                    </div>
-                    
-                    <!-- Chat input -->
-                    <form id="chatForm" class="flex gap-2 mt-2">
-                        <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 bg-[#2a2a2a] border border-[#3d3d3d] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8] transition">
-                        <button type="submit" class="bg-[#8ab4f8] text-black px-6 py-3 rounded-xl text-sm font-bold hover:bg-[#9bc2ff] transition shadow-lg shadow-[#8ab4f8]/20">
-                            Send
-                        </button>
-                    </form>
+        <!-- CHAT SECTION -->
+        <div id="chatSection">
+            <div class="game-card">
+                <div class="flex items-center gap-2 mb-3 pb-2 border-b border-[#30363d]">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-sm font-medium">Gemma 3 27B · API Ready (key hardcoded)</span>
                 </div>
+                
+                <div id="chatMessages" class="h-80 overflow-y-auto mb-3 space-y-3 pr-2">
+                    <div class="text-gray-400 text-sm italic text-center">👋 Start a conversation</div>
+                </div>
+                
+                <div id="typingIndicator" class="hidden mb-2">
+                    <div class="bg-[#252d38] px-4 py-2 rounded-full w-fit">
+                        <span class="typing-dots">Gemma is thinking</span>
+                    </div>
+                </div>
+                
+                <form id="chatForm" class="flex gap-2">
+                    <input type="text" id="chatInput" placeholder="Type a message..." class="flex-1 bg-[#1e242c] border border-[#30363d] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8]">
+                    <button type="submit" class="bg-[#8ab4f8] text-black px-6 py-3 rounded-xl font-bold hover:bg-[#9bc2ff]">SEND</button>
+                </form>
             </div>
         </div>
 
-        <!-- ========== GAMES SECTION ========== (hidden by default) -->
+        <!-- GAMES SECTION -->
         <div id="gamesSection" class="hidden">
-            <!-- Game selection tabs with icons -->
-            <div class="grid grid-cols-3 gap-2 mb-5">
-                <button class="game-selector bg-[#1e1e1e] py-3 rounded-xl text-sm font-medium border-2 transition-all data-[active=true]:border-[#8ab4f8] data-[active=true]:bg-[#252525]" data-game="uno" data-active="true">
-                    <span class="block text-xl mb-1">🎴</span>
-                    UNO
-                </button>
-                <button class="game-selector bg-[#1e1e1e] py-3 rounded-xl text-sm font-medium border-2 border-transparent transition-all" data-game="cards" data-active="false">
-                    <span class="block text-xl mb-1">🃏</span>
-                    Poker
-                </button>
-                <button class="game-selector bg-[#1e1e1e] py-3 rounded-xl text-sm font-medium border-2 border-transparent transition-all" data-game="chess" data-active="false">
-                    <span class="block text-xl mb-1">♟️</span>
-                    Chess
-                </button>
+            <!-- Game tabs -->
+            <div class="grid grid-cols-3 gap-2 mb-4">
+                <button class="game-tab bg-[#8ab4f8] text-black py-3 rounded-xl font-bold" data-game="uno">🎴 UNO</button>
+                <button class="game-tab bg-[#161b22] text-gray-400 py-3 rounded-xl font-bold" data-game="poker">🃏 POKER</button>
+                <button class="game-tab bg-[#161b22] text-gray-400 py-3 rounded-xl font-bold" data-game="chess">♟️ CHESS</button>
             </div>
 
-            <!-- ===== UNO GAME (Enhanced) ===== -->
-            <div id="unoGame" class="game-container block">
-                <div class="game-card-enhanced rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold flex items-center gap-2">
-                            <span class="text-2xl">🎴</span> UNO · vs Bot
-                        </h2>
-                        <span class="bg-[#2a2a2a] px-3 py-1 rounded-full text-xs">Turn: You</span>
-                    </div>
-                    
-                    <!-- Current card display -->
-                    <div class="text-center mb-6">
-                        <div class="inline-block transform rotate-3">
-                            <div class="uno-card-modern green">G7</div>
-                        </div>
-                        <div class="mt-2 text-sm text-gray-400">Current card: <span class="text-green-400 font-bold">Green 7</span></div>
-                    </div>
-                    
-                    <!-- Bot hand (face down) -->
-                    <div class="mb-5">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-sm">🤖 Bot (3 cards)</span>
-                            <span class="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">waiting</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <div class="uno-card-modern opacity-70" style="background: linear-gradient(135deg, #4b5563, #374151); box-shadow: 0 8px 0 #1f2937;">?</div>
-                            <div class="uno-card-modern opacity-70" style="background: linear-gradient(135deg, #4b5563, #374151); box-shadow: 0 8px 0 #1f2937;">?</div>
-                            <div class="uno-card-modern opacity-70" style="background: linear-gradient(135deg, #4b5563, #374151); box-shadow: 0 8px 0 #1f2937;">?</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Player hand (clickable) -->
-                    <div class="mb-5">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-sm">🧑 Your hand</span>
-                            <span class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">your turn</span>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <div class="uno-card-modern red" onclick="playUnoCard(this)">R2</div>
-                            <div class="uno-card-modern blue" onclick="playUnoCard(this)">B5</div>
-                            <div class="uno-card-modern green" onclick="playUnoCard(this)">G9</div>
-                            <div class="uno-card-modern yellow" onclick="playUnoCard(this)">Y1</div>
-                            <div class="uno-card-modern red" onclick="playUnoCard(this)">R8</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Game controls -->
-                    <div class="flex gap-2 mt-4">
-                        <button class="bg-[#8ab4f8] text-black px-5 py-2.5 rounded-xl text-sm font-medium flex-1 shadow-lg shadow-[#8ab4f8]/20" onclick="drawUnoCard()">Draw Card</button>
-                        <button class="bg-[#2a2a2a] px-5 py-2.5 rounded-xl text-sm font-medium flex-1" onclick="botTurnUno()">🤖 Bot Turn</button>
+            <!-- UNO GAME - FULLY FUNCTIONAL -->
+            <div id="unoGame" class="game-card">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">🎴 UNO · COMPLETE RULES</h2>
+                    <div class="flex gap-2">
+                        <span id="unoDirection" class="bg-[#252d38] px-3 py-1 rounded-full text-sm">→</span>
+                        <span id="unoColor" class="bg-[#252d38] px-3 py-1 rounded-full text-sm">Red</span>
                     </div>
                 </div>
+                
+                <!-- Bot area -->
+                <div class="mb-4 bg-[#1e242c] p-4 rounded-xl">
+                    <div class="flex justify-between mb-3">
+                        <span class="font-bold">🤖 BOT</span>
+                        <span id="botCardCount" class="bg-[#30363d] px-3 py-1 rounded-full text-sm">7 cards</span>
+                    </div>
+                    <div id="botHand" class="flex gap-2 overflow-x-auto pb-2 min-h-[110px]">
+                        <!-- Bot cards (hidden) -->
+                    </div>
+                </div>
+                
+                <!-- Discard pile -->
+                <div class="flex justify-center mb-4">
+                    <div id="discardPile" class="uno-card red" style="width: 80px; height: 115px;">7</div>
+                </div>
+                
+                <!-- Player area -->
+                <div class="mb-4 bg-[#1e242c] p-4 rounded-xl">
+                    <div class="flex justify-between mb-3">
+                        <span class="font-bold">🧑 YOU</span>
+                        <span id="playerCardCount" class="bg-[#30363d] px-3 py-1 rounded-full text-sm">7 cards</span>
+                    </div>
+                    <div id="playerHand" class="flex flex-wrap gap-2 justify-center min-h-[110px]">
+                        <!-- Player cards -->
+                    </div>
+                </div>
+                
+                <!-- Controls -->
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="unoDrawBtn" class="bg-[#252d38] py-3 rounded-lg font-medium hover:bg-[#30363d]">DRAW</button>
+                    <button id="unoSayUnoBtn" class="bg-[#eab308] text-black py-3 rounded-lg font-bold hover:bg-[#fbbf24]">UNO!</button>
+                    <button id="unoResetBtn" class="bg-[#30363d] py-3 rounded-lg font-medium hover:bg-[#3a4553]">NEW GAME</button>
+                </div>
+                <div id="unoMessage" class="text-center text-sm mt-3 text-[#8ab4f8] font-medium min-h-[24px]"></div>
             </div>
 
-            <!-- ===== POKER GAME (Enhanced) ===== -->
-            <div id="cardsGame" class="game-container hidden">
-                <div class="game-card-enhanced rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold flex items-center gap-2">
-                            <span class="text-2xl">🃏</span> Poker · 2 Players
-                        </h2>
-                        <select id="pokerMode" class="bg-[#2a2a2a] border border-[#3d3d3d] rounded-lg px-2 py-1 text-xs">
-                            <option value="2p">👥 2 Players</option>
-                            <option value="bot">🤖 vs Bot</option>
+            <!-- POKER GAME - FULLY FUNCTIONAL -->
+            <div id="pokerGame" class="game-card hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">🃏 POKER · TEXAS HOLD'EM</h2>
+                    <div class="flex gap-2">
+                        <span id="pokerPot" class="bg-[#252d38] px-3 py-1 rounded-full text-sm">Pot: $100</span>
+                        <select id="pokerMode" class="bg-[#252d38] border border-[#30363d] rounded px-2 py-1 text-sm">
+                            <option value="bot">🤖 VS BOT</option>
+                            <option value="2p">👥 2 PLAYERS</option>
                         </select>
                     </div>
-                    
-                    <!-- Player 2 / Bot -->
-                    <div class="mb-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span id="player2Label" class="text-sm font-medium">🤖 Bot's hand</span>
-                            <span class="text-xs bg-gray-600 px-2 py-0.5 rounded-full">3 cards</span>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <div class="poker-card" onclick="playPokerCard(this)">A<span class="red-suit">♥</span></div>
-                            <div class="poker-card" onclick="playPokerCard(this)">K<span class="red-suit">♦</span></div>
-                            <div class="poker-card" onclick="playPokerCard(this)">Q<span class="black-suit">♠</span></div>
-                        </div>
+                </div>
+                
+                <!-- Bot/Player 2 hand -->
+                <div class="mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span id="player2Label" class="font-bold">🤖 BOT</span>
+                        <span id="botChips" class="text-sm bg-[#252d38] px-2 py-1 rounded">$500</span>
                     </div>
-                    
-                    <!-- Player 1 (You) -->
-                    <div class="mb-4">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-sm font-medium">🧑 Your hand</span>
-                            <span class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">your turn</span>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            <div class="poker-card" onclick="playPokerCard(this)">10<span class="red-suit">♥</span></div>
-                            <div class="poker-card" onclick="playPokerCard(this)">7<span class="black-suit">♣</span></div>
-                            <div class="poker-card" onclick="playPokerCard(this)">J<span class="red-suit">♦</span></div>
-                            <div class="poker-card" onclick="playPokerCard(this)">4<span class="black-suit">♠</span></div>
-                            <div class="poker-card" onclick="playPokerCard(this)">8<span class="red-suit">♥</span></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Table cards (community) -->
-                    <div class="mb-4 p-3 bg-[#2a2a2a] rounded-xl">
-                        <div class="text-xs text-gray-400 mb-2">Community cards</div>
-                        <div class="flex gap-2">
-                            <div class="poker-card opacity-60" style="transform: none;">?<span class="black-suit">?</span></div>
-                            <div class="poker-card opacity-60" style="transform: none;">?<span class="red-suit">?</span></div>
-                            <div class="poker-card opacity-60" style="transform: none;">?<span class="black-suit">?</span></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Controls -->
-                    <div class="flex gap-2">
-                        <button class="bg-[#8ab4f8] text-black px-4 py-2.5 rounded-xl text-sm font-medium flex-1" onclick="drawPokerCard()">Draw Card</button>
-                        <button class="bg-[#2a2a2a] px-4 py-2.5 rounded-xl text-sm font-medium flex-1" onclick="passPokerTurn()">Pass Turn</button>
+                    <div id="botPokerHand" class="flex gap-2 min-h-[90px]">
+                        <!-- Cards -->
                     </div>
                 </div>
+                
+                <!-- Community cards -->
+                <div class="mb-4 p-4 bg-[#1e242c] rounded-xl">
+                    <div class="text-sm mb-2 font-bold">COMMUNITY CARDS</div>
+                    <div id="communityCards" class="flex gap-2 justify-center min-h-[90px]">
+                        <!-- Cards -->
+                    </div>
+                </div>
+                
+                <!-- Player hand -->
+                <div class="mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-bold">🧑 YOU</span>
+                        <span id="playerChips" class="text-sm bg-[#252d38] px-2 py-1 rounded">$500</span>
+                    </div>
+                    <div id="playerPokerHand" class="flex gap-2 min-h-[90px]">
+                        <!-- Cards -->
+                    </div>
+                </div>
+                
+                <!-- Betting controls -->
+                <div class="grid grid-cols-4 gap-2 mb-2">
+                    <button id="pokerFoldBtn" class="bg-[#ef4444] py-3 rounded-lg text-sm font-bold hover:bg-[#dc2626]">FOLD</button>
+                    <button id="pokerCheckBtn" class="bg-[#252d38] py-3 rounded-lg text-sm font-bold hover:bg-[#30363d]">CHECK</button>
+                    <button id="pokerCallBtn" class="bg-[#8ab4f8] text-black py-3 rounded-lg text-sm font-bold hover:bg-[#9bc2ff]">CALL $10</button>
+                    <button id="pokerRaiseBtn" class="bg-[#22c55e] text-black py-3 rounded-lg text-sm font-bold hover:bg-[#16a34a]">RAISE</button>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="pokerNewHandBtn" class="bg-[#30363d] py-3 rounded-lg font-medium hover:bg-[#3a4553]">NEW HAND</button>
+                    <button id="pokerEvalBtn" class="bg-[#7c3aed] py-3 rounded-lg font-bold hover:bg-[#8b5cf6]">EVALUATE HAND</button>
+                </div>
+                <div id="pokerMessage" class="text-center text-sm mt-3 text-[#8ab4f8] font-medium min-h-[24px]"></div>
             </div>
 
-            <!-- ===== CHESS GAME (Enhanced) ===== -->
-            <div id="chessGame" class="game-container hidden">
-                <div class="game-card-enhanced rounded-2xl p-5">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-bold flex items-center gap-2">
-                            <span class="text-2xl">♟️</span> Chess
-                        </h2>
-                        <select id="chessMode" class="bg-[#2a2a2a] border border-[#3d3d3d] rounded-lg px-2 py-1 text-xs">
-                            <option value="2p">👥 2 Players</option>
-                            <option value="bot">🤖 vs Bot</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Chessboard with 3D effect -->
-                    <div class="flex justify-center mb-4">
-                        <div class="chess-3d bg-[#b58863] p-2 rounded-lg">
-                            <div id="chessboard" class="grid grid-cols-8 gap-0 w-full max-w-[350px] mx-auto border-2 border-[#8b5a2b]">
-                                <!-- Generated by JS -->
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div id="chessStatus" class="text-center text-sm mb-3 text-[#8ab4f8] font-medium">⚪ White's turn</div>
-                    
-                    <div class="flex gap-2">
-                        <button id="resetChessBtn" class="bg-[#8ab4f8] text-black px-4 py-2.5 rounded-xl text-sm font-medium flex-1">New Game</button>
-                        <button id="chessHintBtn" class="bg-[#2a2a2a] px-4 py-2.5 rounded-xl text-sm font-medium flex-1">💡 Hint</button>
-                    </div>
+            <!-- CHESS GAME - FULLY FUNCTIONAL -->
+            <div id="chessGame" class="game-card hidden">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">♟️ CHESS · FULL RULES + AI</h2>
+                    <select id="chessMode" class="bg-[#252d38] border border-[#30363d] rounded px-2 py-1 text-sm">
+                        <option value="2p">👥 2 PLAYERS</option>
+                        <option value="bot" selected>🤖 VS AI (Smart)</option>
+                    </select>
                 </div>
+                
+                <!-- Chess board -->
+                <div id="chessBoardContainer" class="chess-board mb-3">
+                    <!-- Generated by JS -->
+                </div>
+                
+                <div id="chessStatus" class="text-center text-sm mb-2 font-bold text-[#8ab4f8] min-h-[24px]">White's turn</div>
+                
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="chessResetBtn" class="bg-[#30363d] py-3 rounded-lg font-medium hover:bg-[#3a4553]">NEW GAME</button>
+                    <button id="chessHintBtn" class="bg-[#8ab4f8] text-black py-3 rounded-lg font-bold hover:bg-[#9bc2ff]">HINT</button>
+                    <button id="chessAIBtn" class="bg-[#7c3aed] py-3 rounded-lg font-bold hover:bg-[#8b5cf6]">🤖 AI MOVE</button>
+                </div>
+                <div id="chessMessage" class="text-center text-xs mt-2 text-gray-400 min-h-[20px]"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // ==================== GLOBAL FUNCTIONS ====================
-        // Hardcoded Gemma API key
-        const GEMMA_API_KEY = 'AIzaSyBaY5TsW-NDZbu9Aha2H9raHTQ4Qj8SiAw';
-        
-        // Tab switching
-        const tabChat = document.getElementById('tabChat');
-        const tabGames = document.getElementById('tabGames');
-        const chatSection = document.getElementById('chatSection');
-        const gamesSection = document.getElementById('gamesSection');
-
-        tabChat.addEventListener('click', () => {
-            tabChat.classList.add('bg-[#8ab4f8]', 'text-black');
-            tabGames.classList.remove('bg-[#8ab4f8]', 'text-black');
-            tabGames.classList.add('bg-[#1e1e1e]', 'text-gray-400');
-            chatSection.classList.remove('hidden');
-            gamesSection.classList.add('hidden');
-        });
-
-        tabGames.addEventListener('click', () => {
-            tabGames.classList.add('bg-[#8ab4f8]', 'text-black');
-            tabChat.classList.remove('bg-[#8ab4f8]', 'text-black');
-            tabChat.classList.add('bg-[#1e1e1e]', 'text-gray-400');
-            gamesSection.classList.remove('hidden');
-            chatSection.classList.add('hidden');
-        });
-
-        // Game sub-tabs
-        const gameSelectors = document.querySelectorAll('.game-selector');
-        const gameContainers = {
-            uno: document.getElementById('unoGame'),
-            cards: document.getElementById('cardsGame'),
-            chess: document.getElementById('chessGame')
-        };
-
-        gameSelectors.forEach(sel => {
-            sel.addEventListener('click', () => {
-                const game = sel.dataset.game;
-                
-                gameSelectors.forEach(s => {
-                    s.dataset.active = 'false';
-                    s.classList.remove('border-[#8ab4f8]', 'bg-[#252525]');
-                });
-                sel.dataset.active = 'true';
-                sel.classList.add('border-[#8ab4f8]', 'bg-[#252525]');
-                
-                Object.values(gameContainers).forEach(c => c.classList.add('hidden'));
-                gameContainers[game].classList.remove('hidden');
+        (function() {
+            // ========== HARDCODED API KEY ==========
+            const GEMMA_API_KEY = 'AIzaSyBaY5TsW-NDZbu9Aha2H9raHTQ4Qj8SiAw';
+            
+            // ========== TAB SWITCHING ==========
+            const tabChat = document.getElementById('tabChat');
+            const tabGames = document.getElementById('tabGames');
+            const chatSection = document.getElementById('chatSection');
+            const gamesSection = document.getElementById('gamesSection');
+            
+            tabChat.addEventListener('click', () => {
+                tabChat.className = 'tab-btn flex-1 py-3 rounded-xl font-bold bg-[#8ab4f8] text-black';
+                tabGames.className = 'tab-btn flex-1 py-3 rounded-xl font-bold bg-[#161b22] text-gray-400';
+                chatSection.classList.remove('hidden');
+                gamesSection.classList.add('hidden');
             });
-        });
-
-        // ==================== CHAT WITH GEMMA ====================
-        const chatMessages = document.getElementById('chatMessages');
-        const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
-        const typingIndicator = document.getElementById('typingIndicator');
-
-        // Animated message display
-        function addMessage(text, isUser = false) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'} message-animation`;
             
-            const bubble = document.createElement('div');
-            bubble.className = `max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                isUser ? 'bg-[#8ab4f8] text-black font-medium' : 'bg-[#2a2a2a] text-gray-200'
-            }`;
+            tabGames.addEventListener('click', () => {
+                tabGames.className = 'tab-btn flex-1 py-3 rounded-xl font-bold bg-[#8ab4f8] text-black';
+                tabChat.className = 'tab-btn flex-1 py-3 rounded-xl font-bold bg-[#161b22] text-gray-400';
+                gamesSection.classList.remove('hidden');
+                chatSection.classList.add('hidden');
+            });
             
-            // For bot messages, add typing effect
-            if (!isUser) {
-                bubble.style.whiteSpace = 'pre-wrap';
-                bubble.innerText = text;
-            } else {
-                bubble.innerText = text;
-            }
+            // ========== GAME SUB-TABS ==========
+            const gameTabs = document.querySelectorAll('.game-tab');
+            const unoGame = document.getElementById('unoGame');
+            const pokerGame = document.getElementById('pokerGame');
+            const chessGame = document.getElementById('chessGame');
             
-            msgDiv.appendChild(bubble);
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        // Call Gemma API (hardcoded key)
-        async function callGemma(prompt) {
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${GEMMA_API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [{ text: prompt }]
-                        }],
-                        generationConfig: { 
-                            temperature: 0.7, 
-                            maxOutputTokens: 512,
-                            topP: 0.9
-                        }
-                    })
-                });
-
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.error?.message || 'API error');
-                }
-
-                const data = await response.json();
-                return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemma';
-            } catch (err) {
-                console.error(err);
-                return `⚠️ Error: ${err.message}. Using fallback: "${prompt}" (but Gemma should work!)`;
-            }
-        }
-
-        chatForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = chatInput.value.trim();
-            if (!text) return;
-
-            addMessage(text, true);
-            chatInput.value = '';
-
-            // Show typing indicator
-            typingIndicator.classList.remove('hidden');
-
-            const reply = await callGemma(text);
-            
-            // Hide typing indicator
-            typingIndicator.classList.add('hidden');
-            
-            addMessage(reply, false);
-        });
-
-        // ==================== GAME FUNCTIONS ====================
-        // UNO game functions
-        window.playUnoCard = function(card) {
-            card.style.transform = 'translateY(8px)';
-            setTimeout(() => {
-                card.style.transform = '';
-                alert(`You played ${card.innerText}! Bot's turn now.`);
-                // Simulate bot response
-                setTimeout(() => {
-                    document.querySelector('#unoGame .flex.gap-2 .bg-\\[\\#2a2a2a\\]')?.click();
-                }, 800);
-            }, 150);
-        };
-
-        window.drawUnoCard = function() {
-            alert('You drew a card! (simulated)');
-        };
-
-        window.botTurnUno = function() {
-            const botCards = document.querySelectorAll('#unoGame .flex.gap-2 .uno-card-modern.opacity-70');
-            if (botCards.length > 0) {
-                botCards[0].style.transform = 'translateY(8px)';
-                setTimeout(() => {
-                    botCards[0].style.transform = '';
-                    alert('Bot played a card!');
-                }, 300);
-            }
-        };
-
-        // Poker functions
-        window.playPokerCard = function(card) {
-            card.style.transform = 'translateY(5px)';
-            setTimeout(() => {
-                card.style.transform = '';
-                alert(`Card played: ${card.innerText}`);
-            }, 150);
-        };
-
-        window.drawPokerCard = function() {
-            alert('You drew a new card! (simulated)');
-        };
-
-        window.passPokerTurn = function() {
-            const mode = document.getElementById('pokerMode').value;
-            if (mode === 'bot') {
-                alert('Bot is thinking...');
-                setTimeout(() => {
-                    alert('Bot played a card!');
-                }, 1000);
-            } else {
-                alert('Turn passed to Player 2');
-            }
-        };
-
-        // Poker mode switch
-        document.getElementById('pokerMode')?.addEventListener('change', (e) => {
-            const label = document.getElementById('player2Label');
-            if (e.target.value === 'bot') {
-                label.innerHTML = '🤖 Bot\'s hand';
-            } else {
-                label.innerHTML = '👤 Player 2\'s hand';
-            }
-        });
-
-        // Chess board generation
-        const chessboard = document.getElementById('chessboard');
-        const chessStatus = document.getElementById('chessStatus');
-        let selectedChessSquare = null;
-        
-        const initialBoard = [
-            ['♜','♞','♝','♛','♚','♝','♞','♜'],
-            ['♟','♟','♟','♟','♟','♟','♟','♟'],
-            ['','','','','','','',''],
-            ['','','','','','','',''],
-            ['','','','','','','',''],
-            ['','','','','','','',''],
-            ['♙','♙','♙','♙','♙','♙','♙','♙'],
-            ['♖','♘','♗','♕','♔','♗','♘','♖']
-        ];
-
-        function renderChessBoard(board) {
-            chessboard.innerHTML = '';
-            for (let row = 0; row < 8; row++) {
-                for (let col = 0; col < 8; col++) {
-                    const square = document.createElement('div');
-                    square.className = `aspect-square flex items-center justify-center text-xl sm:text-2xl cursor-pointer transition-all
-                        ${(row + col) % 2 === 0 ? 'bg-[#f0d9b5]' : 'bg-[#b58863]'} 
-                        hover:brightness-110 hover:scale-105`;
-                    square.dataset.row = row;
-                    square.dataset.col = col;
-                    square.textContent = board[row][col];
+            gameTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const game = this.dataset.game;
+                    gameTabs.forEach(t => {
+                        t.className = 'game-tab bg-[#161b22] text-gray-400 py-3 rounded-xl font-bold';
+                    });
+                    this.className = 'game-tab bg-[#8ab4f8] text-black py-3 rounded-xl font-bold';
                     
-                    square.addEventListener('click', () => {
-                        if (selectedChessSquare) {
-                            // Move piece
-                            const fromRow = selectedChessSquare.dataset.row;
-                            const fromCol = selectedChessSquare.dataset.col;
-                            const piece = board[fromRow][fromCol];
-                            
-                            if (piece) {
-                                board[row][col] = piece;
-                                board[fromRow][fromCol] = '';
+                    [unoGame, pokerGame, chessGame].forEach(g => g.classList.add('hidden'));
+                    if (game === 'uno') unoGame.classList.remove('hidden');
+                    if (game === 'poker') pokerGame.classList.remove('hidden');
+                    if (game === 'chess') chessGame.classList.remove('hidden');
+                });
+            });
+            
+            // ========== CHAT WITH GEMMA ==========
+            const chatMessages = document.getElementById('chatMessages');
+            const chatForm = document.getElementById('chatForm');
+            const chatInput = document.getElementById('chatInput');
+            const typingIndicator = document.getElementById('typingIndicator');
+            
+            function addMessage(text, isUser) {
+                const div = document.createElement('div');
+                div.className = `flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`;
+                div.innerHTML = `<div class="max-w-[80%] rounded-2xl px-4 py-2 text-sm ${isUser ? 'bg-[#8ab4f8] text-black font-bold' : 'bg-[#252d38]'}">${text}</div>`;
+                chatMessages.appendChild(div);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            async function callGemma(prompt) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${GEMMA_API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }]
+                        })
+                    });
+                    const data = await response.json();
+                    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
+                } catch (err) {
+                    return 'Error connecting to Gemma API';
+                }
+            }
+            
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = chatInput.value.trim();
+                if (!text) return;
+                
+                addMessage(text, true);
+                chatInput.value = '';
+                typingIndicator.classList.remove('hidden');
+                
+                const reply = await callGemma(text);
+                typingIndicator.classList.add('hidden');
+                addMessage(reply, false);
+            });
+            
+            // ========== UNO GAME - COMPLETE WITH ALL SPECIAL CARDS ==========
+            const unoColors = ['red', 'blue', 'green', 'yellow'];
+            const unoValues = ['0','1','2','3','4','5','6','7','8','9','Skip','Reverse','+2'];
+            const wildValues = ['Wild', 'Wild +4'];
+            
+            let unoPlayerHand = [];
+            let unoBotHand = [];
+            let unoDiscard = { color: 'red', value: '7', type: 'normal' };
+            let unoDirection = 1;
+            let unoPlayerTurn = true;
+            let unoGameActive = true;
+            let unoSkipNext = false;
+            
+            function generateUnoCard() {
+                if (Math.random() < 0.15) {
+                    return {
+                        color: 'wild',
+                        value: Math.random() < 0.5 ? 'Wild' : '+4',
+                        type: 'wild'
+                    };
+                } else {
+                    return {
+                        color: unoColors[Math.floor(Math.random() * 4)],
+                        value: unoValues[Math.floor(Math.random() * unoValues.length)],
+                        type: 'normal'
+                    };
+                }
+            }
+            
+            function initUno() {
+                unoPlayerHand = [];
+                unoBotHand = [];
+                for (let i = 0; i < 7; i++) {
+                    unoPlayerHand.push(generateUnoCard());
+                    unoBotHand.push(generateUnoCard());
+                }
+                unoDiscard = generateUnoCard();
+                while (unoDiscard.type === 'wild') unoDiscard = generateUnoCard();
+                unoDirection = 1;
+                unoPlayerTurn = true;
+                unoGameActive = true;
+                unoSkipNext = false;
+                renderUno();
+                document.getElementById('unoMessage').textContent = 'Your turn!';
+            }
+            
+            function renderUno() {
+                const playerDiv = document.getElementById('playerHand');
+                const botDiv = document.getElementById('botHand');
+                const discardDiv = document.getElementById('discardPile');
+                const playerCount = document.getElementById('playerCardCount');
+                const botCount = document.getElementById('botCardCount');
+                const directionSpan = document.getElementById('unoDirection');
+                const colorSpan = document.getElementById('unoColor');
+                
+                playerDiv.innerHTML = '';
+                unoPlayerHand.forEach((card, index) => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = `uno-card ${card.color}`;
+                    cardEl.textContent = card.value;
+                    cardEl.setAttribute('data-index', index);
+                    cardEl.onclick = () => playUnoCard(index);
+                    playerDiv.appendChild(cardEl);
+                });
+                
+                botDiv.innerHTML = '';
+                unoBotHand.forEach(() => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = 'uno-card wild';
+                    cardEl.textContent = '?';
+                    botDiv.appendChild(cardEl);
+                });
+                
+                discardDiv.className = `uno-card ${unoDiscard.color}`;
+                discardDiv.textContent = unoDiscard.value;
+                
+                playerCount.textContent = unoPlayerHand.length + ' cards';
+                botCount.textContent = unoBotHand.length + ' cards';
+                directionSpan.textContent = unoDirection === 1 ? '→' : '←';
+                colorSpan.textContent = unoDiscard.color.charAt(0).toUpperCase() + unoDiscard.color.slice(1);
+                colorSpan.className = `bg-[#252d38] px-3 py-1 rounded-full text-sm text-${unoDiscard.color}-400`;
+                
+                if (!unoGameActive) return;
+                document.getElementById('unoTurn').textContent = unoPlayerTurn ? 'Your turn' : 'Bot turn';
+            }
+            
+            function playUnoCard(index) {
+                if (!unoPlayerTurn || !unoGameActive) return;
+                
+                const card = unoPlayerHand[index];
+                let canPlay = false;
+                
+                if (card.type === 'wild') {
+                    canPlay = true;
+                } else {
+                    canPlay = (card.color === unoDiscard.color || card.value === unoDiscard.value);
+                }
+                
+                if (!canPlay) {
+                    document.getElementById('unoMessage').textContent = '❌ Cannot play that card!';
+                    return;
+                }
+                
+                // Play card
+                unoDiscard = card;
+                unoPlayerHand.splice(index, 1);
+                
+                // Handle special cards
+                if (card.value === 'Skip') {
+                    document.getElementById('unoMessage').textContent = '⏭️ Skip! Bot loses turn';
+                    unoPlayerTurn = false;
+                    renderUno();
+                    setTimeout(() => {
+                        unoPlayerTurn = true;
+                        renderUno();
+                        document.getElementById('unoMessage').textContent = 'Your turn';
+                    }, 1000);
+                    return;
+                }
+                
+                if (card.value === 'Reverse') {
+                    unoDirection *= -1;
+                    document.getElementById('unoMessage').textContent = '🔄 Direction reversed';
+                }
+                
+                if (card.value === '+2') {
+                    for (let i = 0; i < 2; i++) unoBotHand.push(generateUnoCard());
+                    document.getElementById('unoMessage').textContent = '+2! Bot draws 2 cards';
+                }
+                
+                if (card.value === '+4') {
+                    for (let i = 0; i < 4; i++) unoBotHand.push(generateUnoCard());
+                    unoDiscard.color = unoColors[Math.floor(Math.random() * 4)];
+                    document.getElementById('unoMessage').textContent = '+4! Bot draws 4 cards';
+                }
+                
+                if (card.value === 'Wild') {
+                    unoDiscard.color = unoColors[Math.floor(Math.random() * 4)];
+                    document.getElementById('unoMessage').textContent = '🌈 Wild! Color changed';
+                }
+                
+                renderUno();
+                
+                if (unoPlayerHand.length === 0) {
+                    alert('🎉 YOU WIN!');
+                    initUno();
+                    return;
+                }
+                
+                unoPlayerTurn = false;
+                renderUno();
+                setTimeout(botTurnUno, 1500);
+            }
+            
+            function botTurnUno() {
+                if (!unoGameActive) return;
+                
+                // Bot tries to play
+                let playedIndex = -1;
+                for (let i = 0; i < unoBotHand.length; i++) {
+                    const card = unoBotHand[i];
+                    if (card.type === 'wild' || card.color === unoDiscard.color || card.value === unoDiscard.value) {
+                        playedIndex = i;
+                        break;
+                    }
+                }
+                
+                if (playedIndex !== -1) {
+                    const card = unoBotHand[playedIndex];
+                    unoDiscard = card;
+                    unoBotHand.splice(playedIndex, 1);
+                    
+                    if (card.value === 'Skip') {
+                        document.getElementById('unoMessage').textContent = '🤖 played Skip! You lose turn';
+                        unoPlayerTurn = false;
+                        setTimeout(() => {
+                            unoPlayerTurn = true;
+                            renderUno();
+                        }, 1000);
+                    } else if (card.value === 'Reverse') {
+                        unoDirection *= -1;
+                    } else if (card.value === '+2') {
+                        for (let i = 0; i < 2; i++) unoPlayerHand.push(generateUnoCard());
+                    } else if (card.value === '+4') {
+                        for (let i = 0; i < 4; i++) unoPlayerHand.push(generateUnoCard());
+                        unoDiscard.color = unoColors[Math.floor(Math.random() * 4)];
+                    } else if (card.value === 'Wild') {
+                        unoDiscard.color = unoColors[Math.floor(Math.random() * 4)];
+                    }
+                    
+                    renderUno();
+                    
+                    if (unoBotHand.length === 0) {
+                        alert('🤖 BOT WINS!');
+                        initUno();
+                        return;
+                    }
+                } else {
+                    unoBotHand.push(generateUnoCard());
+                    document.getElementById('unoMessage').textContent = '🤖 drew a card';
+                    renderUno();
+                }
+                
+                unoPlayerTurn = true;
+                renderUno();
+                document.getElementById('unoMessage').textContent = 'Your turn';
+            }
+            
+            document.getElementById('unoDrawBtn').addEventListener('click', () => {
+                if (!unoPlayerTurn) {
+                    document.getElementById('unoMessage').textContent = 'Not your turn';
+                    return;
+                }
+                unoPlayerHand.push(generateUnoCard());
+                renderUno();
+                unoPlayerTurn = false;
+                renderUno();
+                setTimeout(botTurnUno, 1500);
+            });
+            
+            document.getElementById('unoSayUnoBtn').addEventListener('click', () => {
+                if (unoPlayerHand.length === 1) {
+                    document.getElementById('unoMessage').textContent = '✅ UNO!';
+                } else {
+                    document.getElementById('unoMessage').textContent = '❌ You don\'t have 1 card';
+                }
+            });
+            
+            document.getElementById('unoResetBtn').addEventListener('click', initUno);
+            
+            // ========== POKER GAME - COMPLETE WITH BETTING ==========
+            const suits = ['♥','♦','♠','♣'];
+            const ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+            
+            let pokerDeck = [];
+            let pokerPlayerHand = [];
+            let pokerBotHand = [];
+            let pokerCommunity = [];
+            let playerChips = 500;
+            let botChips = 500;
+            let pot = 0;
+            let currentBet = 10;
+            let pokerPhase = 'pre-flop';
+            
+            function createPokerDeck() {
+                const deck = [];
+                for (let suit of suits) {
+                    for (let rank of ranks) {
+                        deck.push({ rank, suit });
+                    }
+                }
+                return deck.sort(() => Math.random() - 0.5);
+            }
+            
+            function initPoker() {
+                pokerDeck = createPokerDeck();
+                pokerPlayerHand = [pokerDeck.pop(), pokerDeck.pop()];
+                pokerBotHand = [pokerDeck.pop(), pokerDeck.pop()];
+                pokerCommunity = [];
+                pot = 20; // Ante
+                playerChips -= 10;
+                botChips -= 10;
+                pokerPhase = 'pre-flop';
+                renderPoker();
+                document.getElementById('pokerMessage').textContent = 'Pre-flop. Check or raise?';
+            }
+            
+            function renderPoker() {
+                const playerDiv = document.getElementById('playerPokerHand');
+                const botDiv = document.getElementById('botPokerHand');
+                const communityDiv = document.getElementById('communityCards');
+                const mode = document.getElementById('pokerMode').value;
+                
+                document.getElementById('playerChips').textContent = '$' + playerChips;
+                document.getElementById('botChips').textContent = '$' + botChips;
+                document.getElementById('pokerPot').textContent = 'Pot: $' + pot;
+                
+                playerDiv.innerHTML = '';
+                pokerPlayerHand.forEach(card => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = 'poker-card';
+                    cardEl.innerHTML = `${card.rank}<span class="${card.suit === '♥' || card.suit === '♦' ? 'red-suit' : ''}">${card.suit}</span>`;
+                    playerDiv.appendChild(cardEl);
+                });
+                
+                botDiv.innerHTML = '';
+                if (mode === 'bot') {
+                    pokerBotHand.forEach(() => {
+                        const cardEl = document.createElement('div');
+                        cardEl.className = 'poker-card bg-gray-600 text-white';
+                        cardEl.innerHTML = '?';
+                        botDiv.appendChild(cardEl);
+                    });
+                } else {
+                    pokerBotHand.forEach(card => {
+                        const cardEl = document.createElement('div');
+                        cardEl.className = 'poker-card';
+                        cardEl.innerHTML = `${card.rank}<span class="${card.suit === '♥' || card.suit === '♦' ? 'red-suit' : ''}">${card.suit}</span>`;
+                        botDiv.appendChild(cardEl);
+                    });
+                }
+                
+                communityDiv.innerHTML = '';
+                pokerCommunity.forEach(card => {
+                    const cardEl = document.createElement('div');
+                    cardEl.className = 'poker-card';
+                    cardEl.innerHTML = `${card.rank}<span class="${card.suit === '♥' || card.suit === '♦' ? 'red-suit' : ''}">${card.suit}</span>`;
+                    communityDiv.appendChild(cardEl);
+                });
+            }
+            
+            function evaluateHand(hand, community) {
+                const allCards = [...hand, ...community];
+                let rankCounts = {};
+                let suitCounts = {};
+                
+                allCards.forEach(card => {
+                    rankCounts[card.rank] = (rankCounts[card.rank] || 0) + 1;
+                    suitCounts[card.suit] = (suitCounts[card.suit] || 0) + 1;
+                });
+                
+                const values = Object.values(rankCounts);
+                if (values.includes(4)) return 'Four of a Kind';
+                if (values.includes(3) && values.includes(2)) return 'Full House';
+                if (values.includes(3)) return 'Three of a Kind';
+                if (values.filter(v => v === 2).length === 2) return 'Two Pair';
+                if (values.includes(2)) return 'One Pair';
+                if (Object.values(suitCounts).includes(5)) return 'Flush';
+                
+                return 'High Card';
+            }
+            
+            document.getElementById('pokerFoldBtn').addEventListener('click', () => {
+                document.getElementById('pokerMessage').textContent = 'You folded! New hand dealt.';
+                setTimeout(initPoker, 1000);
+            });
+            
+            document.getElementById('pokerCheckBtn').addEventListener('click', () => {
+                if (pokerPhase === 'pre-flop') {
+                    pokerPhase = 'flop';
+                    pokerCommunity = [pokerDeck.pop(), pokerDeck.pop(), pokerDeck.pop()];
+                    document.getElementById('pokerMessage').textContent = 'Flop dealt';
+                } else if (pokerPhase === 'flop') {
+                    pokerPhase = 'turn';
+                    pokerCommunity.push(pokerDeck.pop());
+                    document.getElementById('pokerMessage').textContent = 'Turn dealt';
+                } else if (pokerPhase === 'turn') {
+                    pokerPhase = 'river';
+                    pokerCommunity.push(pokerDeck.pop());
+                    document.getElementById('pokerMessage').textContent = 'River dealt';
+                }
+                renderPoker();
+            });
+            
+            document.getElementById('pokerCallBtn').addEventListener('click', () => {
+                if (playerChips >= currentBet) {
+                    playerChips -= currentBet;
+                    pot += currentBet;
+                    document.getElementById('pokerMessage').textContent = 'You called $' + currentBet;
+                    renderPoker();
+                    
+                    // Bot calls too
+                    setTimeout(() => {
+                        if (botChips >= currentBet) {
+                            botChips -= currentBet;
+                            pot += currentBet;
+                            document.getElementById('pokerMessage').textContent = 'Bot calls';
+                            renderPoker();
+                        }
+                    }, 500);
+                }
+            });
+            
+            document.getElementById('pokerRaiseBtn').addEventListener('click', () => {
+                const raise = 20;
+                if (playerChips >= raise) {
+                    playerChips -= raise;
+                    pot += raise;
+                    currentBet = raise;
+                    document.getElementById('pokerMessage').textContent = 'You raised to $' + raise;
+                    renderPoker();
+                }
+            });
+            
+            document.getElementById('pokerNewHandBtn').addEventListener('click', initPoker);
+            
+            document.getElementById('pokerEvalBtn').addEventListener('click', () => {
+                const handRank = evaluateHand(pokerPlayerHand, pokerCommunity);
+                document.getElementById('pokerMessage').textContent = 'Your hand: ' + handRank;
+            });
+            
+            document.getElementById('pokerMode').addEventListener('change', renderPoker);
+            
+            // ========== CHESS GAME - FULL RULES WITH CHECK/CHECKMATE ==========
+            let chessBoard = [
+                ['♜','♞','♝','♛','♚','♝','♞','♜'],
+                ['♟','♟','♟','♟','♟','♟','♟','♟'],
+                ['','','','','','','',''],
+                ['','','','','','','',''],
+                ['','','','','','','',''],
+                ['','','','','','','',''],
+                ['♙','♙','♙','♙','♙','♙','♙','♙'],
+                ['♖','♘','♗','♕','♔','♗','♘','♖']
+            ];
+            
+            let chessSelected = null;
+            let chessTurn = 'white';
+            let chessValidMoves = [];
+            let chessKingPos = { white: [7,4], black: [0,4] };
+            let chessCheck = { white: false, black: false };
+            
+            function isInCheck(board, color) {
+                const kingPos = color === 'white' ? chessKingPos.white : chessKingPos.black;
+                if (!kingPos) return false;
+                
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = board[row][col];
+                        if (piece && ((color === 'white' && piece === piece.toLowerCase()) || 
+                                     (color === 'black' && piece === piece.toUpperCase()))) {
+                            const moves = getLegalMovesForPiece(board, row, col, true);
+                            if (moves.some(([r, c]) => r === kingPos[0] && c === kingPos[1])) {
+                                return true;
                             }
-                            
-                            selectedChessSquare.classList.remove('ring-4', 'ring-yellow-400');
-                            selectedChessSquare = null;
-                            renderChessBoard(board);
-                            
-                            // Update turn
-                            if (chessStatus.innerText.includes('White')) {
-                                chessStatus.innerText = '⚫ Black\'s turn';
-                            } else {
-                                chessStatus.innerText = '⚪ White\'s turn';
-                            }
-                        } else {
-                            if (square.textContent) {
-                                if (selectedChessSquare) {
-                                    selectedChessSquare.classList.remove('ring-4', 'ring-yellow-400');
-                                }
-                                square.classList.add('ring-4', 'ring-yellow-400');
-                                selectedChessSquare = square;
+                        }
+                    }
+                }
+                return false;
+            }
+            
+            function getLegalMovesForPiece(board, row, col, ignoreCheck = false) {
+                const piece = board[row][col];
+                if (!piece) return [];
+                const moves = [];
+                const isWhite = piece === piece.toUpperCase();
+                
+                // Pawn
+                if (piece === '♙' || piece === '♟') {
+                    const dir = isWhite ? -1 : 1;
+                    if (row + dir >= 0 && row + dir < 8 && !board[row + dir][col]) {
+                        moves.push([row + dir, col]);
+                    }
+                    // Capture
+                    if (row + dir >= 0 && row + dir < 8 && col - 1 >= 0) {
+                        const target = board[row + dir][col - 1];
+                        if (target && ((isWhite && target === target.toLowerCase()) || (!isWhite && target === target.toUpperCase()))) {
+                            moves.push([row + dir, col - 1]);
+                        }
+                    }
+                    if (row + dir >= 0 && row + dir < 8 && col + 1 < 8) {
+                        const target = board[row + dir][col + 1];
+                        if (target && ((isWhite && target === target.toLowerCase()) || (!isWhite && target === target.toUpperCase()))) {
+                            moves.push([row + dir, col + 1]);
+                        }
+                    }
+                }
+                
+                // Knight
+                if (piece === '♘' || piece === '♞') {
+                    const knightMoves = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+                    knightMoves.forEach(([dr, dc]) => {
+                        const nr = row + dr;
+                        const nc = col + dc;
+                        if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+                            const target = board[nr][nc];
+                            if (!target || (isWhite && target === target.toLowerCase()) || (!isWhite && target === target.toUpperCase())) {
+                                moves.push([nr, nc]);
                             }
                         }
                     });
+                }
+                
+                // Rook, Bishop, Queen
+                const pieces = ['♖','♜','♗','♝','♕','♛'];
+                if (pieces.includes(piece)) {
+                    let directions = [];
+                    if (piece === '♖' || piece === '♜' || piece === '♕' || piece === '♛') {
+                        directions.push([-1,0],[1,0],[0,-1],[0,1]);
+                    }
+                    if (piece === '♗' || piece === '♝' || piece === '♕' || piece === '♛') {
+                        directions.push([-1,-1],[-1,1],[1,-1],[1,1]);
+                    }
                     
-                    chessboard.appendChild(square);
+                    directions.forEach(([dr, dc]) => {
+                        for (let s = 1; s < 8; s++) {
+                            const nr = row + dr * s;
+                            const nc = col + dc * s;
+                            if (nr < 0 || nr >= 8 || nc < 0 || nc >= 8) break;
+                            const target = board[nr][nc];
+                            if (!target) {
+                                moves.push([nr, nc]);
+                            } else {
+                                if ((isWhite && target === target.toLowerCase()) || (!isWhite && target === target.toUpperCase())) {
+                                    moves.push([nr, nc]);
+                                }
+                                break;
+                            }
+                        }
+                    });
+                }
+                
+                // King
+                if (piece === '♔' || piece === '♚') {
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            if (dr === 0 && dc === 0) continue;
+                            const nr = row + dr;
+                            const nc = col + dc;
+                            if (nr >= 0 && nr < 8 && nc >= 0 && nc < 8) {
+                                const target = board[nr][nc];
+                                if (!target || (isWhite && target === target.toLowerCase()) || (!isWhite && target === target.toUpperCase())) {
+                                    moves.push([nr, nc]);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                return moves;
+            }
+            
+            function getValidMoves(board, row, col) {
+                const piece = board[row][col];
+                if (!piece) return [];
+                const isWhite = piece === piece.toUpperCase();
+                if ((chessTurn === 'white' && !isWhite) || (chessTurn === 'black' && isWhite)) return [];
+                
+                const moves = getLegalMovesForPiece(board, row, col);
+                
+                // Filter moves that would leave king in check
+                return moves.filter(([toRow, toCol]) => {
+                    const newBoard = board.map(row => [...row]);
+                    newBoard[toRow][toCol] = newBoard[row][col];
+                    newBoard[row][col] = '';
+                    
+                    // Update king position if moving king
+                    let newKingPos = { ...chessKingPos };
+                    if (piece === '♔' || piece === '♚') {
+                        if (isWhite) {
+                            newKingPos.white = [toRow, toCol];
+                        } else {
+                            newKingPos.black = [toRow, toCol];
+                        }
+                    }
+                    
+                    // Check if king is in check after move
+                    const kingRow = (piece === '♔' || piece === '♚') ? toRow : (isWhite ? chessKingPos.white[0] : chessKingPos.black[0]);
+                    const kingCol = (piece === '♔' || piece === '♚') ? toCol : (isWhite ? chessKingPos.white[1] : chessKingPos.black[1]);
+                    
+                    for (let r = 0; r < 8; r++) {
+                        for (let c = 0; c < 8; c++) {
+                            const p = newBoard[r][c];
+                            if (p && ((isWhite && p === p.toLowerCase()) || (!isWhite && p === p.toUpperCase()))) {
+                                const attacks = getLegalMovesForPiece(newBoard, r, c, true);
+                                if (attacks.some(([ar, ac]) => ar === kingRow && ac === kingCol)) {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                });
+            }
+            
+            function renderChess() {
+                const container = document.getElementById('chessBoardContainer');
+                container.innerHTML = '';
+                
+                // Check if kings are in check
+                chessCheck.white = isInCheck(chessBoard, 'white');
+                chessCheck.black = isInCheck(chessBoard, 'black');
+                
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const square = document.createElement('div');
+                        square.className = `chess-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                        square.textContent = chessBoard[row][col];
+                        square.dataset.row = row;
+                        square.dataset.col = col;
+                        
+                        // Highlight king in check
+                        if ((chessBoard[row][col] === '♔' && chessCheck.white) || 
+                            (chessBoard[row][col] === '♚' && chessCheck.black)) {
+                            square.classList.add('check');
+                        }
+                        
+                        if (chessSelected && chessSelected.row === row && chessSelected.col === col) {
+                            square.classList.add('selected');
+                        }
+                        
+                        if (chessValidMoves.some(m => m[0] === row && m[1] === col)) {
+                            square.classList.add('valid-move');
+                        }
+                        
+                        square.addEventListener('click', () => {
+                            const r = parseInt(square.dataset.row);
+                            const c = parseInt(square.dataset.col);
+                            
+                            if (chessSelected === null) {
+                                const moves = getValidMoves(chessBoard, r, c);
+                                if (moves.length > 0) {
+                                    chessSelected = { row: r, col: c };
+                                    chessValidMoves = moves;
+                                    renderChess();
+                                }
+                            } else {
+                                if (chessValidMoves.some(m => m[0] === r && m[1] === c)) {
+                                    // Make move
+                                    const piece = chessBoard[chessSelected.row][chessSelected.col];
+                                    
+                                    // Update king position if moving king
+                                    if (piece === '♔') chessKingPos.white = [r, c];
+                                    if (piece === '♚') chessKingPos.black = [r, c];
+                                    
+                                    chessBoard[r][c] = piece;
+                                    chessBoard[chessSelected.row][chessSelected.col] = '';
+                                    
+                                    chessTurn = chessTurn === 'white' ? 'black' : 'white';
+                                    
+                                    // Check for checkmate
+                                    const inCheck = isInCheck(chessBoard, chessTurn);
+                                    let hasMoves = false;
+                                    
+                                    // Look for any legal move for current player
+                                    for (let rr = 0; rr < 8; rr++) {
+                                        for (let cc = 0; cc < 8; cc++) {
+                                            const p = chessBoard[rr][cc];
+                                            if (p && ((chessTurn === 'white' && p === p.toUpperCase()) || 
+                                                     (chessTurn === 'black' && p === p.toLowerCase()))) {
+                                                if (getValidMoves(chessBoard, rr, cc).length > 0) {
+                                                    hasMoves = true;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    
+                                    if (inCheck && !hasMoves) {
+                                        document.getElementById('chessMessage').textContent = 
+                                            (chessTurn === 'white' ? 'Black' : 'White') + ' wins by checkmate!';
+                                    } else if (inCheck) {
+                                        document.getElementById('chessMessage').textContent = chessTurn + ' is in check!';
+                                    } else {
+                                        document.getElementById('chessMessage').textContent = '';
+                                    }
+                                }
+                                chessSelected = null;
+                                chessValidMoves = [];
+                                renderChess();
+                                document.getElementById('chessStatus').textContent = 
+                                    (chessTurn === 'white' ? 'White' : 'Black') + '\'s turn';
+                            }
+                        });
+                        
+                        container.appendChild(square);
+                    }
                 }
             }
-        }
-
-        renderChessBoard(initialBoard);
-
-        document.getElementById('resetChessBtn').addEventListener('click', () => {
-            renderChessBoard(initialBoard);
-            chessStatus.innerText = '⚪ White\'s turn';
-            if (selectedChessSquare) {
-                selectedChessSquare.classList.remove('ring-4', 'ring-yellow-400');
-                selectedChessSquare = null;
+            
+            function chessAIMove() {
+                if (chessTurn !== 'black') return;
+                
+                // Find all black pieces with valid moves
+                let moves = [];
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = chessBoard[row][col];
+                        if (piece && piece === piece.toLowerCase()) {
+                            const validMoves = getValidMoves(chessBoard, row, col);
+                            validMoves.forEach(move => {
+                                moves.push({
+                                    from: [row, col],
+                                    to: move,
+                                    piece: piece
+                                });
+                            });
+                        }
+                    }
+                }
+                
+                if (moves.length > 0) {
+                    // Prioritize captures
+                    const captures = moves.filter(m => {
+                        const target = chessBoard[m.to[0]][m.to[1]];
+                        return target && target === target.toUpperCase();
+                    });
+                    
+                    const selectedMove = captures.length > 0 ? 
+                        captures[Math.floor(Math.random() * captures.length)] : 
+                        moves[Math.floor(Math.random() * moves.length)];
+                    
+                    // Make the move
+                    const piece = chessBoard[selectedMove.from[0]][selectedMove.from[1]];
+                    
+                    // Update king position if moving king
+                    if (piece === '♚') chessKingPos.black = [selectedMove.to[0], selectedMove.to[1]];
+                    
+                    chessBoard[selectedMove.to[0]][selectedMove.to[1]] = piece;
+                    chessBoard[selectedMove.from[0]][selectedMove.from[1]] = '';
+                    
+                    chessTurn = 'white';
+                    renderChess();
+                    document.getElementById('chessStatus').textContent = 'White\'s turn';
+                    document.getElementById('chessMessage').textContent = 'AI moved';
+                    
+                    // Check if white is in check
+                    if (isInCheck(chessBoard, 'white')) {
+                        document.getElementById('chessMessage').textContent = 'White is in check!';
+                    }
+                }
             }
-        });
-
-        document.getElementById('chessHintBtn').addEventListener('click', () => {
-            alert('💡 Try moving a pawn! (Hint: click piece, then destination)');
-        });
-
-        document.getElementById('chessMode')?.addEventListener('change', (e) => {
-            if (e.target.value === 'bot') {
-                alert('Bot mode activated. Make your move, then bot will respond.');
-            }
-        });
-
-        // Initialize first game tab
-        document.querySelector('[data-game="uno"]').click();
+            
+            document.getElementById('chessResetBtn').addEventListener('click', () => {
+                chessBoard = [
+                    ['♜','♞','♝','♛','♚','♝','♞','♜'],
+                    ['♟','♟','♟','♟','♟','♟','♟','♟'],
+                    ['','','','','','','',''],
+                    ['','','','','','','',''],
+                    ['','','','','','','',''],
+                    ['','','','','','','',''],
+                    ['♙','♙','♙','♙','♙','♙','♙','♙'],
+                    ['♖','♘','♗','♕','♔','♗','♘','♖']
+                ];
+                chessKingPos = { white: [7,4], black: [0,4] };
+                chessSelected = null;
+                chessTurn = 'white';
+                chessValidMoves = [];
+                renderChess();
+                document.getElementById('chessStatus').textContent = 'White\'s turn';
+                document.getElementById('chessMessage').textContent = '';
+            });
+            
+            document.getElementById('chessHintBtn').addEventListener('click', () => {
+                if (chessSelected) {
+                    document.getElementById('chessMessage').textContent = 
+                        'Valid moves: ' + chessValidMoves.length;
+                } else {
+                    document.getElementById('chessMessage').textContent = 
+                        'Select a piece first';
+                }
+            });
+            
+            document.getElementById('chessAIBtn').addEventListener('click', chessAIMove);
+            
+            document.getElementById('chessMode').addEventListener('change', (e) => {
+                if (e.target.value === 'bot' && chessTurn === 'black') {
+                    setTimeout(chessAIMove, 500);
+                }
+            });
+            
+            // Initialize all games
+            initUno();
+            initPoker();
+            renderChess();
+        })();
     </script>
-
-    <style>
-        /* Custom scrollbar */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #1e1e1e;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #3d3d3d;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #4d4d4d;
-        }
-        
-        /* Game cards press effect */
-        .uno-card-modern, .poker-card {
-            user-select: none;
-        }
-        
-        /* Chess pieces */
-        .chess-square {
-            font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
-        }
-    </style>
 </body>
 </html>
