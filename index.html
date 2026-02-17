@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT - Awak Pendek</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #212121;
+        }
+
+        .chat-container {
+            height: calc(100vh - 160px);
+            overflow-y: auto;
+        }
+
+        .sidebar {
+            background-color: #171717;
+        }
+
+        .user-msg {
+            background-color: #2f2f2f;
+        }
+
+        .ai-msg {
+            background-color: transparent;
+        }
+
+        .typing-animation::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #424242;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <div class="flex h-screen">
+        <!-- Sidebar (Hidden on mobile) -->
+        <div class="sidebar w-64 flex-col hidden md:flex">
+            <div class="p-4">
+                <button class="w-full border border-gray-600 rounded-md p-2 text-left hover:bg-gray-800 transition flex items-center gap-2">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" xmlns="http://www.w3.org/2000/svg"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    New Chat
+                </button>
+            </div>
+            <div class="flex-grow"></div>
+            <div class="p-4 border-t border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-xs font-bold text-white">U</div>
+                    <span class="text-sm font-medium">User Pendek</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow flex flex-col bg-[#212121] relative">
+            
+            <!-- Header -->
+            <header class="p-4 flex justify-between items-center text-gray-400 border-b border-gray-800 md:border-none">
+                <div class="md:hidden">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </div>
+                <div class="font-semibold text-gray-200">ChatGPT 4.0 (Geng Susu)</div>
+                <div></div>
+            </header>
+
+            <!-- Chat Display -->
+            <div id="chatWindow" class="chat-container px-4 py-8 flex flex-col gap-6 max-w-3xl mx-auto w-full">
+                <!-- Initial Welcome -->
+                <div class="flex flex-col items-center justify-center h-full opacity-50" id="welcomeScreen">
+                    <div class="w-12 h-12 mb-4 bg-white/10 rounded-full flex items-center justify-center">
+                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 2 12 2ZM12 4C16.418 4 20 7.582 20 12C20 16.418 16.418 20 12 20C7.582 20 4 16.418 4 12C4 7.582 7.582 4 12 4Z" fill="currentColor"/></svg>
+                    </div>
+                    <h1 class="text-2xl font-semibold text-white">Bagaimana saya boleh membantu anda hari ini?</h1>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 max-w-3xl mx-auto w-full absolute bottom-0 left-0 right-0 bg-[#212121]">
+                <form id="chatForm" class="relative">
+                    <input 
+                        type="text" 
+                        id="userInput" 
+                        placeholder="Mesej ChatGPT..." 
+                        class="w-full bg-[#2f2f2f] border border-gray-600 rounded-2xl py-4 px-6 pr-12 focus:outline-none focus:border-gray-500 transition shadow-lg"
+                        autocomplete="off"
+                    >
+                    <button 
+                        type="submit" 
+                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-white text-black p-2 rounded-xl hover:bg-gray-200 transition"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                </form>
+                <p class="text-center text-xs text-gray-500 mt-3">
+                    ChatGPT boleh membuat kesilapan. Pertimbangkan untuk minum susu Fernleaf.
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const chatWindow = document.getElementById('chatWindow');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+
+        function appendMessage(role, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex gap-4 w-full ${role === 'user' ? 'justify-end' : ''}`;
+            
+            const contentClass = role === 'user' ? 'bg-[#2f2f2f] px-4 py-2 rounded-2xl max-w-[80%]' : 'max-w-full';
+            const icon = role === 'user' 
+                ? '<div class="hidden"></div>' 
+                : '<div class="w-8 h-8 rounded-full bg-emerald-600 flex-shrink-0 flex items-center justify-center text-white text-xs">AI</div>';
+
+            msgDiv.innerHTML = `
+                ${role === 'ai' ? icon : ''}
+                <div class="${contentClass}">
+                    <p class="text-sm leading-relaxed">${text}</p>
+                </div>
+            `;
+            
+            chatWindow.appendChild(msgDiv);
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        function simulateTyping(text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex gap-4 w-full";
+            msgDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-emerald-600 flex-shrink-0 flex items-center justify-center text-white text-xs">AI</div>
+                <div class="max-w-full">
+                    <p class="text-sm leading-relaxed typing-animation" id="typingText"></p>
+                </div>
+            `;
+            chatWindow.appendChild(msgDiv);
+            
+            const typingP = msgDiv.querySelector('#typingText');
+            let i = 0;
+            const interval = setInterval(() => {
+                typingP.textContent += text[i];
+                i++;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+                if (i === text.length) {
+                    clearInterval(interval);
+                    typingP.classList.remove('typing-animation');
+                }
+            }, 30);
+        }
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            if (welcomeScreen) {
+                welcomeScreen.style.display = 'none';
+            }
+
+            // User message
+            appendMessage('user', text);
+            userInput.value = '';
+
+            // AI Reply delay
+            setTimeout(() => {
+                simulateTyping("Maaf, awak terlalu pendek untuk gunakan saya. Minumlah susu dan jadi tinggi dahulu. 🥛📏");
+            }, 600);
+        });
+    </script>
+</body>
+</html>
