@@ -2,208 +2,381 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gemini Rate Limit Explorer · With Simulation Mode</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>AI Gemma Playground · Games Betul</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         * { font-family: 'Inter', sans-serif; }
-        body { background: #1a1c1e; }
         
-        .quota-alert {
-            background: linear-gradient(145deg, #2d1f1f, #1f1a1a);
-            border-left: 4px solid #f87171;
+        /* Premium dark theme */
+        body {
+            background: #0a0c0f;
+            background-image: radial-gradient(circle at 10% 20%, #1f2937 0%, #0a0c0f 90%);
+            min-height: 100vh;
         }
         
-        .rate-limit-card {
-            background: #25282c;
-            border: 1px solid #3d4147;
-            transition: all 0.2s;
+        /* Game card hover effects */
+        .game-card-enhanced {
+            background: linear-gradient(145deg, #1e1e1e, #171717);
+            border: 1px solid #2d2d2d;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
         
-        .rate-limit-card:hover {
+        .game-card-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(138, 180, 248, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .game-card-enhanced:hover {
+            transform: translateY(-4px);
             border-color: #8ab4f8;
-            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(138, 180, 248, 0.3);
         }
         
-        .simulation-mode {
-            background: #1e3a2e;
-            border: 1px solid #2a6e4b;
+        .game-card-enhanced:hover::before {
+            left: 100%;
         }
         
-        .retry-countdown {
-            font-family: monospace;
-            color: #fbbf24;
+        /* UNO card styling */
+        .uno-card-modern {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 0 #991b1b, 0 4px 12px rgba(0,0,0,0.4);
+            transition: all 0.1s ease;
+            width: 70px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .uno-card-modern:active {
+            transform: translateY(6px);
+            box-shadow: 0 4px 0 #991b1b, 0 4px 12px rgba(0,0,0,0.4);
+        }
+        
+        .uno-card-modern.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 10px 0 #1e40af; }
+        .uno-card-modern.green { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 10px 0 #166534; }
+        .uno-card-modern.yellow { background: linear-gradient(135deg, #eab308, #ca8a04); box-shadow: 0 10px 0 #854d0e; color: #1e1e1e; text-shadow: 0 1px 2px rgba(255,255,255,0.5); }
+        
+        /* Playing cards */
+        .poker-card {
+            background: white;
+            border-radius: 10px;
+            padding: 8px 6px;
+            font-weight: 700;
+            box-shadow: 0 8px 0 #cbd5e1, 0 4px 10px rgba(0,0,0,0.3);
+            min-width: 50px;
+            text-align: center;
+            font-size: 1.2rem;
+            transition: all 0.1s;
+            cursor: pointer;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .poker-card:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #cbd5e1, 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .red-suit { color: #dc2626; }
+        .black-suit { color: #1e293b; }
+        
+        /* Chess 3D effect */
+        .chess-3d {
+            box-shadow: 0 8px 0 #4b5563, 0 4px 12px black;
+            border-radius: 6px;
+        }
+        
+        /* Typing animation */
+        .typing-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #2a2a2a;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #8ab4f8;
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.6; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Text fade-in animation */
+        .message-animation {
+            animation: messageAppear 0.3s ease-out;
+        }
+        
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Animated gradient border */
+        .gradient-border {
+            position: relative;
+            border: 2px solid transparent;
+            background: linear-gradient(#1e1e1e, #1e1e1e) padding-box, 
+                        linear-gradient(90deg, #8ab4f8, #c084fc, #8ab4f8) border-box;
+            border-radius: 16px;
+            background-size: 200% 100%;
+            animation: borderMove 3s linear infinite;
+        }
+        
+        @keyframes borderMove {
+            0% { background-position: 0% 0; }
+            100% { background-position: 200% 0; }
         }
     </style>
 </head>
-<body class="text-gray-200 p-4 md:p-6">
-    <div class="max-w-7xl mx-auto">
-        <!-- Header with mode toggle -->
-        <div class="bg-[#25282c] rounded-xl p-4 mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between border border-[#3d4147]">
-            <div>
-                <h1 class="text-xl font-semibold flex items-center gap-2">
-                    <span class="text-2xl">📊</span> Gemini Rate Limit Explorer
-                </h1>
-                <p class="text-sm text-gray-400 mt-1">Based on your actual quota data + simulation mode for testing</p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                <div class="flex items-center gap-2 bg-[#1e2124] px-3 py-1.5 rounded-lg border border-[#3d4147]">
-                    <span class="text-xs text-gray-400">🔑</span>
-                    <input type="password" id="apiKey" placeholder="API key (optional in sim mode)" class="bg-transparent border-none text-sm w-48 focus:outline-none">
+<body class="text-gray-200 p-4 pb-24">
+    <!-- Hardcoded API key (Gemma model) -->
+    <div style="display: none;">const GEMMA_API_KEY = 'AIzaSyBaY5TsW-NDZbu9Aha2H9raHTQ4Qj8SiAw';</div>
+
+    <div class="max-w-6xl mx-auto">
+        <!-- Header with hardcoded key badge -->
+        <div class="bg-gradient-to-r from-[#1e1e1e] to-[#25282c] rounded-2xl p-5 mb-6 border border-[#3d4147] shadow-xl">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-[#8ab4f8] rounded-2xl flex items-center justify-center text-black text-2xl font-bold">G</div>
+                <div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-[#8ab4f8] to-[#c084fc] bg-clip-text text-transparent">Gemma 3 Playground</h1>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="bg-[#2a2a2a] px-3 py-1 rounded-full text-xs flex items-center gap-1">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            API Key: <span class="font-mono text-green-400">AIzaSyB...iAw</span>
+                        </span>
+                        <span class="bg-[#2a2a2a] px-3 py-1 rounded-full text-xs">Model: gemma-3-27b-it</span>
+                    </div>
                 </div>
-                <button id="saveKeyBtn" class="bg-[#32363b] hover:bg-[#3d4147] px-4 py-2 rounded-lg text-sm border border-[#4a4f55]">Save Key</button>
-                <button id="toggleSimMode" class="bg-[#1e3a2e] text-[#4ade80] px-4 py-2 rounded-lg text-sm border border-[#2a6e4b] flex items-center gap-2">
-                    <span>🔄</span> Simulation ON
+            </div>
+        </div>
+
+        <!-- Main tabs: Chat / Games -->
+        <div class="flex gap-2 mb-6">
+            <button id="tabChat" class="tab-btn flex-1 py-3 rounded-xl text-sm font-bold transition-all bg-[#8ab4f8] text-black shadow-lg shadow-[#8ab4f8]/20">💬 CHAT</button>
+            <button id="tabGames" class="tab-btn flex-1 py-3 rounded-xl text-sm font-bold transition-all text-gray-400 bg-[#1e1e1e] hover:bg-[#2a2a2a]">🎮 GAMES</button>
+        </div>
+
+        <!-- ========== CHAT SECTION ========== -->
+        <div id="chatSection" class="block">
+            <div class="gradient-border overflow-hidden">
+                <div class="bg-[#1e1e1e] rounded-2xl p-5">
+                    <!-- Chat header -->
+                    <div class="flex items-center gap-2 mb-4 pb-2 border-b border-[#2d2d2d]">
+                        <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="text-sm font-medium">Gemma 3 27B · Connected</span>
+                    </div>
+                    
+                    <!-- Chat messages -->
+                    <div id="chatMessages" class="h-96 overflow-y-auto pr-2 space-y-4 mb-4 custom-scrollbar">
+                        <div class="text-gray-500 text-sm italic text-center">👋 Start a conversation with Gemma 3</div>
+                    </div>
+                    
+                    <!-- Typing indicator (hidden by default) -->
+                    <div id="typingIndicator" class="typing-indicator hidden">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <span class="text-xs text-gray-400 ml-1">Gemma is thinking...</span>
+                    </div>
+                    
+                    <!-- Chat input -->
+                    <form id="chatForm" class="flex gap-2 mt-2">
+                        <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 bg-[#2a2a2a] border border-[#3d3d3d] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#8ab4f8] transition">
+                        <button type="submit" class="bg-[#8ab4f8] text-black px-6 py-3 rounded-xl text-sm font-bold hover:bg-[#9bc2ff] transition shadow-lg shadow-[#8ab4f8]/20">
+                            Send
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== GAMES SECTION ========== (hidden by default) -->
+        <div id="gamesSection" class="hidden">
+            <!-- Game selection tabs with icons -->
+            <div class="grid grid-cols-3 gap-2 mb-5">
+                <button class="game-selector bg-[#1e1e1e] py-3 rounded-xl text-sm font-medium border-2 transition-all data-[active=true]:border-[#8ab4f8] data-[active=true]:bg-[#252525]" data-game="uno" data-active="true">
+                    <span class="block text-xl mb-1">🎴</span>
+                    UNO
+                </button>
+                <button class="game-selector bg-[#1e1e1e] py-3 rounded-xl text-sm font-medium border-2 border-transparent transition-all" data-game="cards" data-active="false">
+                    <span class="block text-xl mb-1">🃏</span>
+                    Poker
+                </button>
+                <button class="game-selector bg-[#1e1e1e] py-3 rounded-xl text-sm font-medium border-2 border-transparent transition-all" data-game="chess" data-active="false">
+                    <span class="block text-xl mb-1">♟️</span>
+                    Chess
                 </button>
             </div>
-        </div>
 
-        <!-- Quota warning (shown when 429 occurs) -->
-        <div id="quotaWarning" class="quota-alert mb-6 p-4 rounded-lg hidden">
-            <div class="flex items-start gap-3">
-                <span class="text-2xl">⚠️</span>
-                <div>
-                    <h3 class="font-semibold text-red-400">Free Tier Quota Exceeded</h3>
-                    <p id="quotaMessage" class="text-sm text-gray-300 mt-1"></p>
-                    <div id="retryTimer" class="text-sm font-mono mt-2 text-yellow-400"></div>
-                    <div class="mt-3 flex gap-3">
-                        <button id="enableSimBtn" class="bg-[#1e3a2e] text-[#4ade80] px-3 py-1.5 rounded text-sm border border-[#2a6e4b]">🔄 Enable Simulation Mode</button>
-                        <a href="https://ai.google.dev/gemini-api/docs/rate-limits" target="_blank" class="text-blue-400 text-sm underline underline-offset-2 px-3 py-1.5">View Rate Limits →</a>
+            <!-- ===== UNO GAME (Enhanced) ===== -->
+            <div id="unoGame" class="game-container block">
+                <div class="game-card-enhanced rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold flex items-center gap-2">
+                            <span class="text-2xl">🎴</span> UNO · vs Bot
+                        </h2>
+                        <span class="bg-[#2a2a2a] px-3 py-1 rounded-full text-xs">Turn: You</span>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Rate limits quick reference (from your data) -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-6">
-            <div class="rate-limit-card p-3 rounded-lg">
-                <div class="text-xs text-gray-400">Gemini 2.5 Flash</div>
-                <div class="text-lg font-semibold">10 RPM</div>
-                <div class="text-sm">250K TPM · 20 RPD</div>
-            </div>
-            <div class="rate-limit-card p-3 rounded-lg">
-                <div class="text-xs text-gray-400">Gemini 2.0 Pro</div>
-                <div class="text-lg font-semibold">15 RPM</div>
-                <div class="text-sm">Unlimited TPM · 1.5K RPD</div>
-            </div>
-            <div class="rate-limit-card p-3 rounded-lg">
-                <div class="text-xs text-gray-400">Gemma 3 27B</div>
-                <div class="text-lg font-semibold">30 RPM</div>
-                <div class="text-sm">15K TPM · 14.4K RPD</div>
-            </div>
-            <div class="rate-limit-card p-3 rounded-lg">
-                <div class="text-xs text-gray-400">Imagen 3</div>
-                <div class="text-lg font-semibold">25 RPD</div>
-                <div class="text-sm">Image generation only</div>
-            </div>
-        </div>
-
-        <!-- Main interface -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Left: Model selector & controls -->
-            <div class="lg:col-span-1">
-                <div class="bg-[#25282c] rounded-xl p-4 border border-[#3d4147]">
-                    <h3 class="font-medium mb-3">🎯 Model Selection</h3>
                     
-                    <select id="modelSelect" class="w-full bg-[#1e2124] border border-[#3d4147] rounded-lg px-4 py-3 text-sm mb-4">
-                        <optgroup label="📝 Text-out (long context)">
-                            <option value="gemini-2.5-flash-preview-04-17" data-rpm="10" data-tpm="250000" data-rpd="20">Gemini 2.5 Flash (10 RPM, 250K TPM, 20 RPD)</option>
-                            <option value="gemini-2.0-flash-exp" data-rpm="15" data-tpm="-1" data-rpd="1500" selected>Gemini 2.0 Flash Exp (15 RPM, Unlimited TPM)</option>
-                            <option value="gemini-2.0-pro-exp-02-05" data-rpm="15" data-tpm="-1" data-rpd="1500">Gemini 2.0 Pro Exp (15 RPM, Unlimited TPM)</option>
-                        </optgroup>
-                        <optgroup label="🖼️ Vision & Image">
-                            <option value="gemini-2.0-flash-vision" data-rpm="15" data-tpm="-1" data-rpd="1500">Gemini 2.0 Flash Vision</option>
-                            <option value="gemini-2.0-flash-exp-image-generation" data-rpm="15" data-tpm="-1" data-rpd="1500">Gemini 2.0 Flash Image Gen</option>
-                            <option value="imagen-3.0-generate-001" data-rpm="0" data-tpm="0" data-rpd="25">Imagen 3 (25 images/day)</option>
-                        </optgroup>
-                        <optgroup label="🎤 Audio & Embedding">
-                            <option value="gemini-2.0-flash-exp-audio" data-rpm="15" data-tpm="1000000" data-rpd="-1">Gemini 2.0 Flash Audio (1M TPM)</option>
-                            <option value="text-embedding-004" data-rpm="100" data-tpm="30000" data-rpd="1000">Embedding 004 (100 RPM, 30K TPM)</option>
-                        </optgroup>
-                        <optgroup label="⚡ High RPM (Gemma)">
-                            <option value="gemma-3-27b-it" data-rpm="30" data-tpm="15000" data-rpd="14400">Gemma 3 27B (30 RPM, 15K TPM)</option>
-                            <option value="gemma-3-12b-it" data-rpm="30" data-tpm="15000" data-rpd="14400">Gemma 3 12B</option>
-                        </optgroup>
-                    </select>
-
-                    <!-- Current limits display -->
-                    <div class="bg-[#1e2124] p-3 rounded-lg mb-4">
-                        <div class="text-xs text-gray-400 mb-2">📊 Current model limits</div>
-                        <div class="grid grid-cols-3 gap-2 text-center">
-                            <div class="bg-[#2c2f33] p-2 rounded">
-                                <div class="text-lg font-bold" id="displayRpm">15</div>
-                                <div class="text-xs">RPM</div>
-                            </div>
-                            <div class="bg-[#2c2f33] p-2 rounded">
-                                <div class="text-lg font-bold" id="displayTpm">∞</div>
-                                <div class="text-xs">TPM</div>
-                            </div>
-                            <div class="bg-[#2c2f33] p-2 rounded">
-                                <div class="text-lg font-bold" id="displayRpd">1.5K</div>
-                                <div class="text-xs">RPD</div>
-                            </div>
+                    <!-- Current card display -->
+                    <div class="text-center mb-6">
+                        <div class="inline-block transform rotate-3">
+                            <div class="uno-card-modern green">G7</div>
                         </div>
+                        <div class="mt-2 text-sm text-gray-400">Current card: <span class="text-green-400 font-bold">Green 7</span></div>
                     </div>
-
-                    <!-- Usage tracker -->
-                    <div class="mb-4">
-                        <div class="flex justify-between text-xs mb-1">
-                            <span>Session usage (simulated)</span>
-                            <span id="requestCounter">0 / 60 RPM</span>
-                        </div>
-                        <div class="h-2 bg-[#1e2124] rounded-full overflow-hidden">
-                            <div id="usageBar" class="h-full bg-[#8ab4f8] w-0"></div>
-                        </div>
-                    </div>
-
-                    <!-- Input options -->
-                    <textarea id="promptInput" rows="3" placeholder="Enter your prompt..." class="w-full bg-[#1e2124] border border-[#3d4147] rounded-lg px-4 py-3 text-sm mb-3">Explain which Gemini model is best for large-scale usage based on rate limits.</textarea>
                     
-                    <div class="space-y-2 mb-4">
-                        <label class="flex items-center gap-2 text-sm">
-                            <input type="file" id="imageUpload" accept="image/*" class="text-xs">
-                        </label>
-                        <label class="flex items-center gap-2 text-sm">
-                            <input type="checkbox" id="simulateMode" checked class="accent-[#4ade80]"> 
-                            <span>🔄 Simulation mode (no API calls)</span>
-                        </label>
-                    </div>
-
-                    <button id="sendRequestBtn" class="w-full bg-[#8ab4f8] hover:bg-[#9bc2ff] text-black font-medium px-4 py-3 rounded-lg flex items-center justify-center gap-2">
-                        <span>🚀</span> Execute Request
-                    </button>
-                </div>
-            </div>
-
-            <!-- Right: Response area with quota info -->
-            <div class="lg:col-span-2">
-                <div class="bg-[#1e2124] rounded-xl border border-[#3d4147] h-full flex flex-col">
-                    <div class="flex items-center justify-between px-4 py-3 border-b border-[#32363b]">
-                        <span class="text-sm font-medium">Response & Rate Limit Analysis</span>
+                    <!-- Bot hand (face down) -->
+                    <div class="mb-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm">🤖 Bot (3 cards)</span>
+                            <span class="text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">waiting</span>
+                        </div>
                         <div class="flex gap-2">
-                            <span id="modeIndicator" class="text-xs bg-[#1e3a2e] text-[#4ade80] px-2 py-1 rounded">SIMULATION ACTIVE</span>
-                            <button id="clearBtn" class="text-xs bg-[#32363b] px-2 py-1 rounded hover:bg-[#3d4147]">Clear</button>
+                            <div class="uno-card-modern opacity-70" style="background: linear-gradient(135deg, #4b5563, #374151); box-shadow: 0 8px 0 #1f2937;">?</div>
+                            <div class="uno-card-modern opacity-70" style="background: linear-gradient(135deg, #4b5563, #374151); box-shadow: 0 8px 0 #1f2937;">?</div>
+                            <div class="uno-card-modern opacity-70" style="background: linear-gradient(135deg, #4b5563, #374151); box-shadow: 0 8px 0 #1f2937;">?</div>
                         </div>
                     </div>
                     
-                    <div id="responseContainer" class="p-4 flex-grow overflow-y-auto max-h-[500px] response-area">
-                        <div class="text-gray-400 text-sm italic">✨ Welcome! You're in simulation mode. The free tier quota (429 errors) will be simulated so you can see how to handle them.</div>
+                    <!-- Player hand (clickable) -->
+                    <div class="mb-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm">🧑 Your hand</span>
+                            <span class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">your turn</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="uno-card-modern red" onclick="playUnoCard(this)">R2</div>
+                            <div class="uno-card-modern blue" onclick="playUnoCard(this)">B5</div>
+                            <div class="uno-card-modern green" onclick="playUnoCard(this)">G9</div>
+                            <div class="uno-card-modern yellow" onclick="playUnoCard(this)">Y1</div>
+                            <div class="uno-card-modern red" onclick="playUnoCard(this)">R8</div>
+                        </div>
                     </div>
+                    
+                    <!-- Game controls -->
+                    <div class="flex gap-2 mt-4">
+                        <button class="bg-[#8ab4f8] text-black px-5 py-2.5 rounded-xl text-sm font-medium flex-1 shadow-lg shadow-[#8ab4f8]/20" onclick="drawUnoCard()">Draw Card</button>
+                        <button class="bg-[#2a2a2a] px-5 py-2.5 rounded-xl text-sm font-medium flex-1" onclick="botTurnUno()">🤖 Bot Turn</button>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Rate limit analysis panel -->
-                    <div class="border-t border-[#32363b] p-4 bg-[#1a1c1e]">
-                        <div class="text-xs text-gray-400 mb-2">📈 Large-scale usage recommendation (based on your data)</div>
-                        <div class="grid grid-cols-2 gap-3 text-sm">
-                            <div class="bg-[#25282c] p-2 rounded">
-                                <span class="text-[#8ab4f8]">Gemini 2.0 Pro/Flash</span>
-                                <p class="text-xs text-gray-400">Best for long text (unlimited TPM)</p>
-                            </div>
-                            <div class="bg-[#25282c] p-2 rounded">
-                                <span class="text-[#8ab4f8]">Gemma 3 27B</span>
-                                <p class="text-xs text-gray-400">Best for high request volume (30 RPM)</p>
+            <!-- ===== POKER GAME (Enhanced) ===== -->
+            <div id="cardsGame" class="game-container hidden">
+                <div class="game-card-enhanced rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold flex items-center gap-2">
+                            <span class="text-2xl">🃏</span> Poker · 2 Players
+                        </h2>
+                        <select id="pokerMode" class="bg-[#2a2a2a] border border-[#3d3d3d] rounded-lg px-2 py-1 text-xs">
+                            <option value="2p">👥 2 Players</option>
+                            <option value="bot">🤖 vs Bot</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Player 2 / Bot -->
+                    <div class="mb-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span id="player2Label" class="text-sm font-medium">🤖 Bot's hand</span>
+                            <span class="text-xs bg-gray-600 px-2 py-0.5 rounded-full">3 cards</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="poker-card" onclick="playPokerCard(this)">A<span class="red-suit">♥</span></div>
+                            <div class="poker-card" onclick="playPokerCard(this)">K<span class="red-suit">♦</span></div>
+                            <div class="poker-card" onclick="playPokerCard(this)">Q<span class="black-suit">♠</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Player 1 (You) -->
+                    <div class="mb-4">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-sm font-medium">🧑 Your hand</span>
+                            <span class="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">your turn</span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="poker-card" onclick="playPokerCard(this)">10<span class="red-suit">♥</span></div>
+                            <div class="poker-card" onclick="playPokerCard(this)">7<span class="black-suit">♣</span></div>
+                            <div class="poker-card" onclick="playPokerCard(this)">J<span class="red-suit">♦</span></div>
+                            <div class="poker-card" onclick="playPokerCard(this)">4<span class="black-suit">♠</span></div>
+                            <div class="poker-card" onclick="playPokerCard(this)">8<span class="red-suit">♥</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Table cards (community) -->
+                    <div class="mb-4 p-3 bg-[#2a2a2a] rounded-xl">
+                        <div class="text-xs text-gray-400 mb-2">Community cards</div>
+                        <div class="flex gap-2">
+                            <div class="poker-card opacity-60" style="transform: none;">?<span class="black-suit">?</span></div>
+                            <div class="poker-card opacity-60" style="transform: none;">?<span class="red-suit">?</span></div>
+                            <div class="poker-card opacity-60" style="transform: none;">?<span class="black-suit">?</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Controls -->
+                    <div class="flex gap-2">
+                        <button class="bg-[#8ab4f8] text-black px-4 py-2.5 rounded-xl text-sm font-medium flex-1" onclick="drawPokerCard()">Draw Card</button>
+                        <button class="bg-[#2a2a2a] px-4 py-2.5 rounded-xl text-sm font-medium flex-1" onclick="passPokerTurn()">Pass Turn</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== CHESS GAME (Enhanced) ===== -->
+            <div id="chessGame" class="game-container hidden">
+                <div class="game-card-enhanced rounded-2xl p-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-bold flex items-center gap-2">
+                            <span class="text-2xl">♟️</span> Chess
+                        </h2>
+                        <select id="chessMode" class="bg-[#2a2a2a] border border-[#3d3d3d] rounded-lg px-2 py-1 text-xs">
+                            <option value="2p">👥 2 Players</option>
+                            <option value="bot">🤖 vs Bot</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Chessboard with 3D effect -->
+                    <div class="flex justify-center mb-4">
+                        <div class="chess-3d bg-[#b58863] p-2 rounded-lg">
+                            <div id="chessboard" class="grid grid-cols-8 gap-0 w-full max-w-[350px] mx-auto border-2 border-[#8b5a2b]">
+                                <!-- Generated by JS -->
                             </div>
                         </div>
+                    </div>
+                    
+                    <div id="chessStatus" class="text-center text-sm mb-3 text-[#8ab4f8] font-medium">⚪ White's turn</div>
+                    
+                    <div class="flex gap-2">
+                        <button id="resetChessBtn" class="bg-[#8ab4f8] text-black px-4 py-2.5 rounded-xl text-sm font-medium flex-1">New Game</button>
+                        <button id="chessHintBtn" class="bg-[#2a2a2a] px-4 py-2.5 rounded-xl text-sm font-medium flex-1">💡 Hint</button>
                     </div>
                 </div>
             </div>
@@ -211,259 +384,315 @@
     </div>
 
     <script>
-        (function() {
-            // State
-            let apiKey = localStorage.getItem('gemini_api_key') || '';
-            let simulationMode = true; // Start in simulation mode to avoid quota
-            let requestCount = 0;
-            let lastRequestTime = Date.now();
-            let quotaResetTimer = null;
+        // ==================== GLOBAL FUNCTIONS ====================
+        // Hardcoded Gemma API key
+        const GEMMA_API_KEY = 'AIzaSyBaY5TsW-NDZbu9Aha2H9raHTQ4Qj8SiAw';
+        
+        // Tab switching
+        const tabChat = document.getElementById('tabChat');
+        const tabGames = document.getElementById('tabGames');
+        const chatSection = document.getElementById('chatSection');
+        const gamesSection = document.getElementById('gamesSection');
 
-            // DOM elements
-            const apiKeyInput = document.getElementById('apiKey');
-            const saveKeyBtn = document.getElementById('saveKeyBtn');
-            const toggleSimBtn = document.getElementById('toggleSimMode');
-            const modelSelect = document.getElementById('modelSelect');
-            const promptInput = document.getElementById('promptInput');
-            const imageUpload = document.getElementById('imageUpload');
-            const simulateCheck = document.getElementById('simulateMode');
-            const sendBtn = document.getElementById('sendRequestBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const responseDiv = document.getElementById('responseContainer');
-            const quotaWarning = document.getElementById('quotaWarning');
-            const quotaMessage = document.getElementById('quotaMessage');
-            const retryTimer = document.getElementById('retryTimer');
-            const enableSimBtn = document.getElementById('enableSimBtn');
-            const modeIndicator = document.getElementById('modeIndicator');
-            const displayRpm = document.getElementById('displayRpm');
-            const displayTpm = document.getElementById('displayTpm');
-            const displayRpd = document.getElementById('displayRpd');
-            const requestCounter = document.getElementById('requestCounter');
-            const usageBar = document.getElementById('usageBar');
+        tabChat.addEventListener('click', () => {
+            tabChat.classList.add('bg-[#8ab4f8]', 'text-black');
+            tabGames.classList.remove('bg-[#8ab4f8]', 'text-black');
+            tabGames.classList.add('bg-[#1e1e1e]', 'text-gray-400');
+            chatSection.classList.remove('hidden');
+            gamesSection.classList.add('hidden');
+        });
 
-            // Set initial API key if exists
-            if (apiKey) {
-                apiKeyInput.value = apiKey;
-            }
+        tabGames.addEventListener('click', () => {
+            tabGames.classList.add('bg-[#8ab4f8]', 'text-black');
+            tabChat.classList.remove('bg-[#8ab4f8]', 'text-black');
+            tabChat.classList.add('bg-[#1e1e1e]', 'text-gray-400');
+            gamesSection.classList.remove('hidden');
+            chatSection.classList.add('hidden');
+        });
 
-            // Update limits display when model changes
-            modelSelect.addEventListener('change', () => {
-                const selected = modelSelect.selectedOptions[0];
-                const rpm = selected.dataset.rpm || '15';
-                const tpm = selected.dataset.tpm === '-1' ? '∞' : (parseInt(selected.dataset.tpm)/1000 + 'K');
-                const rpd = selected.dataset.rpd === '-1' ? '∞' : (parseInt(selected.dataset.rpd)/1000 + 'K');
+        // Game sub-tabs
+        const gameSelectors = document.querySelectorAll('.game-selector');
+        const gameContainers = {
+            uno: document.getElementById('unoGame'),
+            cards: document.getElementById('cardsGame'),
+            chess: document.getElementById('chessGame')
+        };
+
+        gameSelectors.forEach(sel => {
+            sel.addEventListener('click', () => {
+                const game = sel.dataset.game;
                 
-                displayRpm.textContent = rpm;
-                displayTpm.textContent = tpm;
-                displayRpd.textContent = rpd;
+                gameSelectors.forEach(s => {
+                    s.dataset.active = 'false';
+                    s.classList.remove('border-[#8ab4f8]', 'bg-[#252525]');
+                });
+                sel.dataset.active = 'true';
+                sel.classList.add('border-[#8ab4f8]', 'bg-[#252525]');
+                
+                Object.values(gameContainers).forEach(c => c.classList.add('hidden'));
+                gameContainers[game].classList.remove('hidden');
             });
+        });
 
-            // Save API key
-            saveKeyBtn.addEventListener('click', () => {
-                const key = apiKeyInput.value.trim();
-                if (key) {
-                    localStorage.setItem('gemini_api_key', key);
-                    apiKey = key;
-                    appendResponse('✅ API key saved', false);
+        // ==================== CHAT WITH GEMMA ====================
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Animated message display
+        function addMessage(text, isUser = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'} message-animation`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                isUser ? 'bg-[#8ab4f8] text-black font-medium' : 'bg-[#2a2a2a] text-gray-200'
+            }`;
+            
+            // For bot messages, add typing effect
+            if (!isUser) {
+                bubble.style.whiteSpace = 'pre-wrap';
+                bubble.innerText = text;
+            } else {
+                bubble.innerText = text;
+            }
+            
+            msgDiv.appendChild(bubble);
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Call Gemma API (hardcoded key)
+        async function callGemma(prompt) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key=${GEMMA_API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ text: prompt }]
+                        }],
+                        generationConfig: { 
+                            temperature: 0.7, 
+                            maxOutputTokens: 512,
+                            topP: 0.9
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error?.message || 'API error');
                 }
-            });
 
-            // Toggle simulation mode
-            toggleSimBtn.addEventListener('click', () => {
-                simulationMode = !simulationMode;
-                simulateCheck.checked = simulationMode;
-                updateModeDisplay();
-            });
-
-            simulateCheck.addEventListener('change', (e) => {
-                simulationMode = e.target.checked;
-                updateModeDisplay();
-            });
-
-            function updateModeDisplay() {
-                if (simulationMode) {
-                    modeIndicator.textContent = 'SIMULATION ACTIVE';
-                    modeIndicator.className = 'text-xs bg-[#1e3a2e] text-[#4ade80] px-2 py-1 rounded';
-                    toggleSimBtn.innerHTML = '<span>🔄</span> Simulation ON';
-                    toggleSimBtn.className = 'bg-[#1e3a2e] text-[#4ade80] px-4 py-2 rounded-lg text-sm border border-[#2a6e4b] flex items-center gap-2';
-                } else {
-                    modeIndicator.textContent = 'LIVE MODE';
-                    modeIndicator.className = 'text-xs bg-[#32363b] text-[#fbbf24] px-2 py-1 rounded';
-                    toggleSimBtn.innerHTML = '<span>🔴</span> Live Mode';
-                    toggleSimBtn.className = 'bg-[#32363b] text-[#fbbf24] px-4 py-2 rounded-lg text-sm border border-[#fbbf24] flex items-center gap-2';
-                }
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from Gemma';
+            } catch (err) {
+                console.error(err);
+                return `⚠️ Error: ${err.message}. Using fallback: "${prompt}" (but Gemma should work!)`;
             }
+        }
 
-            // Enable simulation from quota warning
-            enableSimBtn.addEventListener('click', () => {
-                simulationMode = true;
-                simulateCheck.checked = true;
-                updateModeDisplay();
-                quotaWarning.classList.add('hidden');
-                appendResponse('✅ Switched to simulation mode to avoid quota limits', false);
-            });
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = chatInput.value.trim();
+            if (!text) return;
 
-            // Clear response
-            clearBtn.addEventListener('click', () => {
-                responseDiv.innerHTML = '<div class="text-gray-400 text-sm italic">✨ Welcome! You\'re in simulation mode. The free tier quota (429 errors) will be simulated so you can see how to handle them.</div>';
-            });
+            addMessage(text, true);
+            chatInput.value = '';
 
-            function appendResponse(text, isUser = false, isError = false, extraClass = '') {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `mb-4 ${isUser ? 'text-right' : ''}`;
-                
-                let bgColor = isError ? 'bg-red-950/30 border-red-800' : (isUser ? 'bg-[#30353b]' : 'bg-[#25282c]');
-                let icon = isUser ? '🧑' : (isError ? '⚠️' : '🤖');
-                
-                msgDiv.innerHTML = `<div class="${bgColor} border ${isError ? 'border-red-800' : 'border-[#41474e]'} rounded-lg p-3 text-sm inline-block max-w-[90%] whitespace-pre-wrap">${icon} ${text}</div>`;
-                
-                responseDiv.appendChild(msgDiv);
-                responseDiv.scrollTop = responseDiv.scrollHeight;
+            // Show typing indicator
+            typingIndicator.classList.remove('hidden');
+
+            const reply = await callGemma(text);
+            
+            // Hide typing indicator
+            typingIndicator.classList.add('hidden');
+            
+            addMessage(reply, false);
+        });
+
+        // ==================== GAME FUNCTIONS ====================
+        // UNO game functions
+        window.playUnoCard = function(card) {
+            card.style.transform = 'translateY(8px)';
+            setTimeout(() => {
+                card.style.transform = '';
+                alert(`You played ${card.innerText}! Bot's turn now.`);
+                // Simulate bot response
+                setTimeout(() => {
+                    document.querySelector('#unoGame .flex.gap-2 .bg-\\[\\#2a2a2a\\]')?.click();
+                }, 800);
+            }, 150);
+        };
+
+        window.drawUnoCard = function() {
+            alert('You drew a card! (simulated)');
+        };
+
+        window.botTurnUno = function() {
+            const botCards = document.querySelectorAll('#unoGame .flex.gap-2 .uno-card-modern.opacity-70');
+            if (botCards.length > 0) {
+                botCards[0].style.transform = 'translateY(8px)';
+                setTimeout(() => {
+                    botCards[0].style.transform = '';
+                    alert('Bot played a card!');
+                }, 300);
             }
+        };
 
-            // Simulate quota error
-            function simulateQuotaError() {
-                const errorMsg = `You exceeded your current quota, please check your plan and billing details.
-* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: ${modelSelect.value}
-* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: ${modelSelect.value}
-Please retry in ${(Math.random() * 60 + 10).toFixed(2)}s.`;
+        // Poker functions
+        window.playPokerCard = function(card) {
+            card.style.transform = 'translateY(5px)';
+            setTimeout(() => {
+                card.style.transform = '';
+                alert(`Card played: ${card.innerText}`);
+            }, 150);
+        };
 
-                quotaMessage.textContent = errorMsg;
-                quotaWarning.classList.remove('hidden');
-                
-                // Start countdown
-                let seconds = 57;
-                if (quotaResetTimer) clearInterval(quotaResetTimer);
-                quotaResetTimer = setInterval(() => {
-                    if (seconds <= 0) {
-                        clearInterval(quotaResetTimer);
-                        retryTimer.textContent = 'Quota should reset now. Try again?';
-                    } else {
-                        retryTimer.textContent = `⏳ Retry available in ${seconds--}s`;
-                    }
+        window.drawPokerCard = function() {
+            alert('You drew a new card! (simulated)');
+        };
+
+        window.passPokerTurn = function() {
+            const mode = document.getElementById('pokerMode').value;
+            if (mode === 'bot') {
+                alert('Bot is thinking...');
+                setTimeout(() => {
+                    alert('Bot played a card!');
                 }, 1000);
-
-                return `❌ 429 Quota Error (simulated):\n${errorMsg}`;
+            } else {
+                alert('Turn passed to Player 2');
             }
+        };
 
-            // Update request counter
-            function updateRequestCounter() {
-                const now = Date.now();
-                if (now - lastRequestTime > 60000) { // Reset after 1 minute
-                    requestCount = 0;
-                }
-                requestCount++;
-                lastRequestTime = now;
-                
-                const rpm = parseInt(modelSelect.selectedOptions[0].dataset.rpm || '15');
-                const percentage = Math.min(100, (requestCount / rpm) * 100);
-                requestCounter.textContent = `${requestCount} / ${rpm} RPM`;
-                usageBar.style.width = percentage + '%';
+        // Poker mode switch
+        document.getElementById('pokerMode')?.addEventListener('change', (e) => {
+            const label = document.getElementById('player2Label');
+            if (e.target.value === 'bot') {
+                label.innerHTML = '🤖 Bot\'s hand';
+            } else {
+                label.innerHTML = '👤 Player 2\'s hand';
             }
+        });
 
-            // Main send function
-            sendBtn.addEventListener('click', async () => {
-                const prompt = promptInput.value.trim();
-                if (!prompt && !imageUpload.files.length) {
-                    alert('Please enter a prompt');
-                    return;
-                }
+        // Chess board generation
+        const chessboard = document.getElementById('chessboard');
+        const chessStatus = document.getElementById('chessStatus');
+        let selectedChessSquare = null;
+        
+        const initialBoard = [
+            ['♜','♞','♝','♛','♚','♝','♞','♜'],
+            ['♟','♟','♟','♟','♟','♟','♟','♟'],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['','','','','','','',''],
+            ['♙','♙','♙','♙','♙','♙','♙','♙'],
+            ['♖','♘','♗','♕','♔','♗','♘','♖']
+        ];
 
-                updateRequestCounter();
-                appendResponse(prompt, true);
-
-                // Simulate quota error randomly if in simulation mode
-                if (simulationMode) {
-                    await new Promise(r => setTimeout(r, 800));
+        function renderChessBoard(board) {
+            chessboard.innerHTML = '';
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = `aspect-square flex items-center justify-center text-xl sm:text-2xl cursor-pointer transition-all
+                        ${(row + col) % 2 === 0 ? 'bg-[#f0d9b5]' : 'bg-[#b58863]'} 
+                        hover:brightness-110 hover:scale-105`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+                    square.textContent = board[row][col];
                     
-                    // 70% chance of quota error in simulation to demonstrate
-                    if (Math.random() < 0.7) {
-                        const errorResponse = simulateQuotaError();
-                        appendResponse(errorResponse, false, true);
-                    } else {
-                        // Successful response
-                        const model = modelSelect.value;
-                        const isImageGen = model.includes('imagen');
-                        
-                        if (isImageGen) {
-                            appendResponse(`✨ [Imagen 3] Generated image based on: "${prompt}"\n(Image would appear here - this is a simulation)`, false, false);
-                        } else {
-                            const response = `Based on the rate limits data you provided:
-
-For long, large-scale usage, here are the best options:
-
-1️⃣ **Gemini 2.0 Pro/Flash (Unlimited TPM)** - Best for very long documents and conversations because token limits are unlimited. RPM is 15, RPD is 1.5K.
-
-2️⃣ **Gemma 3 27B (30 RPM, 14.4K RPD)** - Best for high-frequency requests with moderate message sizes. Higher request throughput.
-
-3️⃣ **For multimodal needs**: Use Gemini 2.0 Flash Vision for image analysis (15 RPM) and Imagen 3 for image generation (25 RPD).
-
-⚠️ **Note**: Free tier quotas are very limited. For production large-scale usage, you'll need a paid tier.`;
+                    square.addEventListener('click', () => {
+                        if (selectedChessSquare) {
+                            // Move piece
+                            const fromRow = selectedChessSquare.dataset.row;
+                            const fromCol = selectedChessSquare.dataset.col;
+                            const piece = board[fromRow][fromCol];
                             
-                            appendResponse(response, false);
-                        }
-                    }
-                } else {
-                    // Live API mode
-                    if (!apiKey) {
-                        appendResponse('Please save your API key first', false, true);
-                        return;
-                    }
-
-                    try {
-                        const model = modelSelect.value;
-                        const parts = [{ text: prompt }];
-                        
-                        // Add image if present
-                        if (imageUpload.files.length) {
-                            const file = imageUpload.files[0];
-                            const reader = new FileReader();
-                            const base64 = await new Promise((res) => {
-                                reader.onload = (e) => res(e.target.result.split(',')[1]);
-                                reader.readAsDataURL(file);
-                            });
-                            
-                            parts.push({
-                                inlineData: {
-                                    mimeType: file.type,
-                                    data: base64
-                                }
-                            });
-                        }
-
-                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{ parts }],
-                                generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
-                            })
-                        });
-
-                        if (!response.ok) {
-                            const error = await response.json();
-                            if (response.status === 429) {
-                                // Show quota warning
-                                quotaMessage.textContent = error.error?.message || 'Quota exceeded';
-                                quotaWarning.classList.remove('hidden');
+                            if (piece) {
+                                board[row][col] = piece;
+                                board[fromRow][fromCol] = '';
                             }
-                            throw new Error(`${response.status}: ${error.error?.message || 'Unknown error'}`);
+                            
+                            selectedChessSquare.classList.remove('ring-4', 'ring-yellow-400');
+                            selectedChessSquare = null;
+                            renderChessBoard(board);
+                            
+                            // Update turn
+                            if (chessStatus.innerText.includes('White')) {
+                                chessStatus.innerText = '⚫ Black\'s turn';
+                            } else {
+                                chessStatus.innerText = '⚪ White\'s turn';
+                            }
+                        } else {
+                            if (square.textContent) {
+                                if (selectedChessSquare) {
+                                    selectedChessSquare.classList.remove('ring-4', 'ring-yellow-400');
+                                }
+                                square.classList.add('ring-4', 'ring-yellow-400');
+                                selectedChessSquare = square;
+                            }
                         }
-
-                        const data = await response.json();
-                        const text = data.candidates?.[0]?.content?.parts?.map(p => p.text).join('\n') || 'No response';
-                        appendResponse(text, false);
-                        
-                    } catch (err) {
-                        appendResponse(`Error: ${err.message}`, false, true);
-                    }
+                    });
+                    
+                    chessboard.appendChild(square);
                 }
-            });
+            }
+        }
 
-            // Initial display
-            updateModeDisplay();
-            modelSelect.dispatchEvent(new Event('change'));
-        })();
+        renderChessBoard(initialBoard);
+
+        document.getElementById('resetChessBtn').addEventListener('click', () => {
+            renderChessBoard(initialBoard);
+            chessStatus.innerText = '⚪ White\'s turn';
+            if (selectedChessSquare) {
+                selectedChessSquare.classList.remove('ring-4', 'ring-yellow-400');
+                selectedChessSquare = null;
+            }
+        });
+
+        document.getElementById('chessHintBtn').addEventListener('click', () => {
+            alert('💡 Try moving a pawn! (Hint: click piece, then destination)');
+        });
+
+        document.getElementById('chessMode')?.addEventListener('change', (e) => {
+            if (e.target.value === 'bot') {
+                alert('Bot mode activated. Make your move, then bot will respond.');
+            }
+        });
+
+        // Initialize first game tab
+        document.querySelector('[data-game="uno"]').click();
     </script>
+
+    <style>
+        /* Custom scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3d3d3d;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #4d4d4d;
+        }
+        
+        /* Game cards press effect */
+        .uno-card-modern, .poker-card {
+            user-select: none;
+        }
+        
+        /* Chess pieces */
+        .chess-square {
+            font-family: 'Segoe UI', 'Arial Unicode MS', sans-serif;
+        }
+    </style>
 </body>
 </html>
